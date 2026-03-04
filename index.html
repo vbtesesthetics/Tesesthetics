@@ -451,7 +451,6 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
 }
 
 /* ══════════════════════════════════════════════════
-/* ══════════════════════════════════════════════════
    RESPONSIVE — Mobile (max 640px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 640px) {
@@ -554,6 +553,34 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .hero-stats { gap: 0.6rem; }
   .hero-logo-circle img { width: 142%; height: 142%; margin-top: 16px; }
 }
+
+/* IMPORTANT: CSS ENDS HERE */
+</style>
+<script src="logo.js"></script>
+</head>
+<body>
+   
+
+<!-- ═══════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">
+      <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
+      <span>Tesesthetics</span>
+    </a>
+    <ul id="nav-menu">
+      <li><a href="#services" class="nav-link">Services</a></li>
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#faq" class="nav-link">FAQ</a></li>
+      <li><a href="#booking" class="nav-link nav-cta">Book Now</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
 <!-- ═══════════════════════════════════════════
      HERO
