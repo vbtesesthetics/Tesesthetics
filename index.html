@@ -209,9 +209,24 @@ section { padding: 6rem 0; }
 .about-logo-circle img { width: 145%; height: 145%; object-fit: cover; display: block; margin-top: 25px; }
 
 /* Desktop hero stats (fine on large screens) */
-.hero-stats {
-  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 3rem; z-index: 3; white-space: nowrap;
+.hero-stats{
+  position: static;
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin: 1rem 0 0;
+  white-space: normal;
+  justify-content: flex-start;
+}
+
+.hero-stat{
+  text-align: left;
+  min-width: 120px;
+}
+
+@media (max-width: 900px){
+  .hero-stats{ justify-content: center; }
+  .hero-stat{ text-align: center; }
 }
 .hero-stat { text-align: center; }
 .hero-stat strong { display: block; font-family: var(--font-display); font-size: 2rem; color: var(--bronze); font-weight: 300; }
@@ -573,6 +588,14 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
       <p class="hero-eyebrow">Buford, GA &middot; Licensed Esthetician</p>
       <h1 class="hero-headline">Your Skin,<br><em>Intentionally</em><br>Cared For.</h1>
       <p class="hero-sub">Licensed esthetician in Buford, GA - clinically trained, personally invested, and ready to make your skin glow.</p>
+
+      <!-- STATS MOVED HERE (under the paragraph) -->
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>100%</strong><span>Personalized</span></div>
+        <div class="hero-stat"><strong>Buford</strong><span>Georgia</span></div>
+        <div class="hero-stat"><strong>New</strong><span>Clients Welcome</span></div>
+      </div>
+
       <div class="hero-actions">
         <a href="#booking" class="btn-primary">Book a Service</a>
         <a href="#services" class="btn-outline">View Services</a>
@@ -586,12 +609,6 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
         <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
       </div>
     </div>
-  </div>
-
-  <div class="hero-stats">
-    <div class="hero-stat"><strong>100%</strong><span>Personalized</span></div>
-    <div class="hero-stat"><strong>Buford</strong><span>Georgia</span></div>
-    <div class="hero-stat"><strong>New</strong><span>Clients Welcome</span></div>
   </div>
 </section>
 
