@@ -86,6 +86,8 @@ section { padding: 6rem 0; }
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
   height: var(--nav-h); display: flex; align-items: center;
   transition: background var(--ease), box-shadow var(--ease);
+  background: rgba(250,247,242,0.96);
+  backdrop-filter: blur(16px);
 }
 #navbar.scrolled {
   background: rgba(250,247,242,0.96);
@@ -126,6 +128,7 @@ section { padding: 6rem 0; }
 #hero {
   position: relative; min-height: 100vh; display: flex;
   align-items: center; overflow: hidden; background: var(--lavender-pale); padding: 0;
+  width: 100%;
 }
 .hero-blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
 .hero-blob-1 { width: 600px; height: 600px; top: -100px; right: -100px; background: radial-gradient(circle, rgba(197,164,232,0.35) 0%, transparent 70%); }
@@ -429,7 +432,8 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
 ══════════════════════════════════════════════════ */
 @media (max-width: 900px) {
   section { padding: 5rem 0; }
-  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding-top: calc(var(--nav-h) + 1rem); padding-bottom: 7rem; }
+  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding-top: calc(var(--nav-h) + 1rem); padding-bottom: 2rem; }
+  .hero-stats { position: relative; bottom: auto; left: auto; transform: none; justify-content: center; flex-wrap: wrap; gap: 1.5rem; padding: 1rem 0; }
   .hero-content { padding: 1rem 0 0; order: 2; }
   .hero-img-wrap { order: 1; }
   .hero-sub { margin: 0 auto 2rem; }
@@ -470,22 +474,21 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .nav-logo img { width: 36px; height: 36px; }
 
   /* HERO */
-  .hero-inner { padding-top: calc(var(--nav-h) + 0.5rem); padding-bottom: 6rem; }
-  .hero-logo-circle { width: 240px; height: 240px; }
-  .hero-img-wrap .logo-ring-1 { width: 290px; height: 290px; }
-  .hero-img-wrap .logo-ring-2 { width: 340px; height: 340px; }
-  .hero-stats { gap: 1.25rem; flex-wrap: wrap; justify-content: center; bottom: 1.5rem; }
+  .hero-inner { padding-top: calc(var(--nav-h) + 0.5rem); padding-bottom: 2rem; }
+  .hero-logo-circle { width: 62vw; height: 62vw; max-width: 260px; max-height: 260px; }
+  .hero-img-wrap .logo-ring-1 { width: calc(62vw + 30px); height: calc(62vw + 30px); max-width: 290px; max-height: 290px; }
+  .hero-img-wrap .logo-ring-2 { width: calc(62vw + 60px); height: calc(62vw + 60px); max-width: 320px; max-height: 320px; }
+  .hero-img-wrap { padding: 2rem 0; }
+  .hero-stats { position: relative; bottom: auto; left: auto; transform: none; justify-content: center; flex-wrap: wrap; gap: 1.25rem; padding: 1rem 0; }
   .hero-stat strong { font-size: 1.5rem; }
-   .hero-eyebrow { justify-content: center; }
-  .hero-actions { justify-content: center; }
 
   /* SERVICES */
   .services-grid { grid-template-columns: 1fr; }
 
   /* ABOUT */
-  .about-logo-circle { width: 160px; height: 160px; }
-  .about-img-wrap .logo-ring-1 { width: 200px; height: 200px; }
-  .about-img-wrap .logo-ring-2 { width: 240px; height: 240px; }
+  .about-logo-circle { width: 50vw; height: 50vw; max-width: 180px; max-height: 180px; }
+  .about-img-wrap .logo-ring-1 { width: calc(50vw + 25px); height: calc(50vw + 25px); max-width: 205px; max-height: 205px; }
+  .about-img-wrap .logo-ring-2 { width: calc(50vw + 50px); height: calc(50vw + 50px); max-width: 230px; max-height: 230px; }
 
   /* BOOKING FORM */
   .booking-form-card { padding: 1.5rem; }
@@ -505,13 +508,11 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
    RESPONSIVE — Small mobile (max 380px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 380px) {
-  .hero-logo-circle { width: 200px; height: 200px; }
-  .hero-img-wrap .logo-ring-1 { width: 248px; height: 248px; }
-  .hero-img-wrap .logo-ring-2 { width: 290px; height: 290px; }
+  .hero-logo-circle { width: 58vw; height: 58vw; max-width: 200px; max-height: 200px; }
+  .hero-img-wrap .logo-ring-1 { width: calc(58vw + 25px); height: calc(58vw + 25px); max-width: 225px; max-height: 225px; }
+  .hero-img-wrap .logo-ring-2 { width: calc(58vw + 50px); height: calc(58vw + 50px); max-width: 250px; max-height: 250px; }
   .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
   .hero-stats { gap: 1rem; }
-  .hero-eyebrow { justify-content: center; }
-  .hero-actions { justify-content: center; }
 }
 </style>
 <script src="logo.js"></script>
