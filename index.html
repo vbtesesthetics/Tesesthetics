@@ -552,6 +552,46 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
   .hero-logo-circle img { width: 142%; height: 142%; margin-top: 16px; }
 }
+   /* ===== FIX: force hero to stack on mobile + put stats UNDER ===== */
+@media (max-width: 900px) {
+  .hero-inner{
+    grid-template-columns: 1fr !important;
+    text-align: center;
+  }
+
+  /* force each child to span full width */
+  .hero-content,
+  .hero-img-wrap,
+  .hero-stats{
+    grid-column: 1 / -1 !important;
+  }
+
+  /* make stats behave like a normal block under content */
+  .hero-stats{
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    bottom: auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 0.75rem !important;
+    margin-top: 0.75rem !important;
+    padding-top: 0.5rem !important;
+    white-space: normal !important;
+  }
+
+  .hero-stat{
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
 </style>
 
 <script src="logo.js"></script>
@@ -585,9 +625,9 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
 
   <div class="hero-inner">
     <div class="hero-content">
-      <p class="hero-eyebrow">Buford, GA &middot; Licensed Esthetician</p>
+      <p class="hero-eyebrow">Buford, GA &middot; cian</p>
       <h1 class="hero-headline">Your Skin,<br><em>Intentionally</em><br>Cared For.</h1>
-      <p class="hero-sub">Licensed esthetician in Buford, GA - clinically trained, personally invested, and ready to make your skin glow.</p>
+      <p class="hero-sub">cian in Buford, GA - clinically trained, personally invested, and ready to make your skin glow.</p>
 
       <!-- STATS MOVED HERE (under the paragraph) -->
       <div class="hero-stats">
