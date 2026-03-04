@@ -102,7 +102,7 @@ async function handleBookingSubmit(e) {
   btn.innerHTML = '<span class="btn-spinner"></span> Sending...';
 
   // Check if endpoint is configured
-  if (SHEETS_CONFIG.endpoint === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+  if (SHEETS_CONFIG.endpoint === "https://script.google.com/macros/s/AKfycbyTN91xqnBkPaPry9qSi2Tw8dUlsaRqIQOVDcBXkaqvc-WnMqeWi8Rp7XPfY8yHfr6zBQ/exec") {
     // Demo mode — show success without actually submitting
     await new Promise(r => setTimeout(r, 1200));
     showFormSuccess(successMsg, btn, formData);
