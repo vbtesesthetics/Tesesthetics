@@ -481,6 +481,39 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
     padding-bottom: 1.5rem;
   }
 
+   /* Force hero to be single-column on small screens */
+.hero-inner{
+  grid-template-columns: 1fr;
+  text-align: center;
+  gap: 1.25rem;
+}
+
+/* Ensure image block is above text if you want */
+.hero-img-wrap{ order: 1; }
+.hero-content{ order: 2; }
+
+/* Make stats FULL WIDTH and below hero, never beside logo */
+.hero-stats{
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+
+  width: 100%;
+  max-width: 100%;
+  margin: 0.75rem auto 0;
+  padding: 0.5rem 0 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  white-space: normal;
+}
+
+.hero-stat{ width: 100%; }
+
   /* optional micro-safety: helps the hero text breathe on small screens */
   .hero-content { padding: 0.75rem 0 0; }
   .hero-headline { line-height: 1.05; }
@@ -493,10 +526,10 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
 
   /* HERO STATS - STACKED (prevents bunching on iPhone) */
   .hero-stats{
-    position: relative;
-    bottom: auto;
-    left: auto;
-    transform: none;
+  position: relative !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
 
     width: 100%;
     max-width: 100%;
