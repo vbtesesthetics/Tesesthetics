@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="Tesesthetics — Licensed esthetician in Buford, GA. Facials, waxing, and personalized skin treatments by Veronica."/>
-<title>Tesesthetics — Skin Care in Buford, GA</title>
+<meta name="description" content="Tesesthetics - Licensed esthetician in Buford, GA. Facials, waxing, and personalized skin treatments by Veronica."/>
+<title>Tesesthetics - Skin Care in Buford, GA</title>
 <link rel="icon" type="image/png" href="assets/logo.png"/>
-<meta property="og:title" content="Tesesthetics — Skin Care in Buford, GA"/>
+<meta property="og:title" content="Tesesthetics - Skin Care in Buford, GA"/>
 <meta property="og:image" content="assets/logo.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
 <style>
 /* =====================================================
-   TESESTHETICS — ALL STYLES
+   TESESTHETICS - ALL STYLES
    Brand: Lavender #C5A4E8 + Bronze #8B4A28
    Fonts: Cormorant Garamond (display) + Jost (body)
-   To change colors: edit the :root variables below
    ===================================================== */
 
 :root {
@@ -76,12 +76,11 @@ section { padding: 6rem 0; }
 .slide-right { transform: translateX(40px); }
 .fade-in.visible,.slide-up.visible,.slide-left.visible,.slide-right.visible { opacity: 1; transform: none; }
 
-/* ── SHARED LOGO + RING ANIMATION ── */
-/* Used in both hero and about sections */
+/* Shared logo animation */
 @keyframes floatLogo { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes rotateRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-/* ── NAVBAR ── */
+/* NAVBAR */
 #navbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 999;
   height: var(--nav-h); display: flex; align-items: center;
@@ -124,7 +123,7 @@ section { padding: 6rem 0; }
 .hamburger.open span:nth-child(2) { opacity: 0; }
 .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ── HERO ── */
+/* HERO */
 #hero {
   position: relative; min-height: 100vh; display: flex;
   align-items: center; overflow: hidden; background: var(--lavender-pale); padding: 0;
@@ -168,14 +167,10 @@ section { padding: 6rem 0; }
 }
 .btn-outline:hover { background: var(--lavender-deep); color: var(--white); transform: translateY(-2px); }
 
-/* ── LOGO CIRCLE + RINGS (shared hero & about) ── */
+/* LOGO CIRCLE + RINGS */
 .logo-img-wrap { display: flex; justify-content: center; align-items: center; position: relative; }
+.logo-ring { position: absolute; border-radius: 50%; border: 1px solid; animation: rotateRing linear infinite; }
 
-.logo-ring {
-  position: absolute; border-radius: 50%; border: 1px solid; animation: rotateRing linear infinite;
-}
-
-/* Hero sizing */
 .hero-img-wrap .logo-ring-1 {
   width: calc(clamp(300px, 42vw, 480px) + 50px);
   height: calc(clamp(300px, 42vw, 480px) + 50px);
@@ -193,10 +188,9 @@ section { padding: 6rem 0; }
   display: flex; align-items: center; justify-content: center; overflow: hidden;
   animation: floatLogo 5s ease-in-out infinite; position: relative; z-index: 2;
 }
-/* CHANGED: margin-top reduced so logo sits higher inside rings */
 .hero-logo-circle img { width: 142%; height: 142%; object-fit: cover; display: block; margin-top: 28px; }
 
-/* About sizing — mirrors hero exactly, just smaller */
+/* About sizing */
 .about-img-wrap .logo-ring-1 {
   width: calc(200px + 40px); height: calc(200px + 40px);
   border-color: rgba(197,164,232,0.3); animation-duration: 20s;
@@ -214,6 +208,7 @@ section { padding: 6rem 0; }
 }
 .about-logo-circle img { width: 145%; height: 145%; object-fit: cover; display: block; margin-top: 25px; }
 
+/* Desktop hero stats (fine on large screens) */
 .hero-stats {
   position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
   display: flex; gap: 3rem; z-index: 3; white-space: nowrap;
@@ -222,7 +217,7 @@ section { padding: 6rem 0; }
 .hero-stat strong { display: block; font-family: var(--font-display); font-size: 2rem; color: var(--bronze); font-weight: 300; }
 .hero-stat span { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
 
-/* ── SERVICES ── */
+/* SERVICES */
 #services { background: var(--white); }
 .services-header { text-align: center; margin-bottom: 4rem; }
 .services-header h2 { color: var(--dark); margin-bottom: 1rem; }
@@ -262,7 +257,7 @@ section { padding: 6rem 0; }
 .card-description { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.65; }
 .card-bullets { margin-bottom: 1.25rem; }
 .card-bullets li { font-size: 0.82rem; color: var(--text-muted); padding: 0.25rem 0 0.25rem 1.2rem; position: relative; }
-.card-bullets li::before { content: "—"; position: absolute; left: 0; color: var(--lavender-deep); font-size: 0.7rem; }
+.card-bullets li::before { content: "-"; position: absolute; left: 0; color: var(--lavender-deep); font-size: 0.7rem; }
 .card-book-btn {
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; color: var(--bronze);
   background: transparent; padding: 0.5rem 0; border-bottom: 1px solid var(--bronze);
@@ -271,7 +266,7 @@ section { padding: 6rem 0; }
 .card-book-btn:hover { color: var(--bronze-light); border-color: var(--bronze-light); letter-spacing: 0.12em; }
 .card-notify { font-size: 0.75rem; color: var(--lavender-deep); font-style: italic; }
 
-/* ── SERVICE CHECKBOXES ── */
+/* SERVICE CHECKBOXES */
 .service-checkboxes {
   display: flex; flex-direction: column; gap: 0.35rem;
   max-height: 260px; overflow-y: auto;
@@ -302,7 +297,7 @@ section { padding: 6rem 0; }
 .checkbox-item.coming-soon-check label { color: var(--text-muted); font-style: italic; opacity: 0.65; cursor: not-allowed; }
 .selected-count { font-size: 0.75rem; color: var(--lavender-deep); margin-top: 0.4rem; min-height: 1.2em; }
 
-/* ── ABOUT ── */
+/* ABOUT */
 #about { background: linear-gradient(160deg, var(--lavender-pale) 0%, var(--cream) 60%); }
 .about-grid { display: grid; grid-template-columns: 1fr 1.4fr; align-items: start; gap: 4rem; }
 .about-visual { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
@@ -315,7 +310,7 @@ section { padding: 6rem 0; }
 .about-name { font-family: var(--font-display); font-size: 1.6rem; color: var(--bronze); font-style: italic; margin-bottom: 1.5rem; }
 .about-bio p { font-size: 1rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.8; }
 
-/* ── BOOKING ── */
+/* BOOKING */
 #booking { background: var(--white); position: relative; overflow: hidden; }
 #booking::before {
   content: ""; position: absolute; top: -200px; right: -200px; width: 500px; height: 500px;
@@ -388,7 +383,7 @@ section { padding: 6rem 0; }
   font-size: 0.9rem; margin-bottom: 1.25rem;
 }
 
-/* ── FAQ ── */
+/* FAQ */
 #faq { background: var(--lavender-pale); }
 .faq-header { text-align: center; margin-bottom: 3.5rem; }
 .faq-header h2 { color: var(--dark); margin-bottom: 0.75rem; }
@@ -406,7 +401,7 @@ section { padding: 6rem 0; }
 .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
 .faq-a p { padding-bottom: 1.25rem; font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; }
 
-/* ── FOOTER ── */
+/* FOOTER */
 footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 2.5rem; }
 .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
 .footer-logo { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
@@ -428,21 +423,50 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
 }
 .footer-bottom span { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
 
-/* ══════════════════════════════════════════════════
-   RESPONSIVE — Tablet (max 900px)
-══════════════════════════════════════════════════ */
+/* =====================================================
+   RESPONSIVE - Tablet (max 900px)
+   Forces hero + stats to stack cleanly
+===================================================== */
 @media (max-width: 900px) {
   section { padding: 5rem 0; }
-  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding-top: calc(var(--nav-h) + 1rem); padding-bottom: 2rem; }
-  .hero-stats { position: relative; bottom: auto; left: auto; transform: none; justify-content: center; flex-wrap: wrap; gap: 1.5rem; padding: 1rem 0; }
+
+  .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.5rem;
+    padding-top: calc(var(--nav-h) + 1rem);
+    padding-bottom: 2rem;
+  }
   .hero-content { padding: 1rem 0 0; order: 2; }
   .hero-img-wrap { order: 1; }
   .hero-sub { margin: 0 auto 2rem; }
   .hero-actions { justify-content: center; }
-  .hero-stats { gap: 1.5rem; }
+
   .hero-img-wrap .logo-ring-1 { width: calc(clamp(220px, 45vw, 340px) + 40px); height: calc(clamp(220px, 45vw, 340px) + 40px); }
   .hero-img-wrap .logo-ring-2 { width: calc(clamp(220px, 45vw, 340px) + 80px); height: calc(clamp(220px, 45vw, 340px) + 80px); }
   .hero-logo-circle { width: clamp(220px, 45vw, 340px); height: clamp(220px, 45vw, 340px); }
+
+  /* Force stats under hero on tablet/phone */
+  .hero-stats{
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    white-space: normal !important;
+    margin: 0.75rem auto 0 !important;
+    padding: 0.5rem 0 0 !important;
+    gap: 0.75rem !important;
+  }
+  .hero-stat{ width: 100% !important; text-align: center !important; }
+
   .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .about-visual { order: -1; }
   .booking-layout { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -450,15 +474,14 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .footer-grid > div:first-child { grid-column: 1 / -1; }
 }
 
-/* ══════════════════════════════════════════════════
-   RESPONSIVE — Mobile (max 640px)
-══════════════════════════════════════════════════ */
+/* =====================================================
+   RESPONSIVE - Mobile (max 640px)
+===================================================== */
 @media (max-width: 640px) {
   :root { --nav-h: 64px; }
   section { padding: 4rem 0; }
   .container { padding: 0 1.25rem; }
 
-  /* NAV */
   .hamburger { display: flex; }
   #nav-menu {
     position: fixed; top: var(--nav-h); left: 0; right: 0;
@@ -475,46 +498,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .nav-logo span { font-size: 1.1rem; }
   .nav-logo img { width: 36px; height: 36px; }
 
-  /* HERO */
-  .hero-inner {
-    padding-top: calc(var(--nav-h) + 0.5rem);
-    padding-bottom: 1.5rem;
-  }
-
-   /* Force hero to be single-column on small screens */
-.hero-inner{
-  grid-template-columns: 1fr;
-  text-align: center;
-  gap: 1.25rem;
-}
-
-/* Ensure image block is above text if you want */
-.hero-img-wrap{ order: 1; }
-.hero-content{ order: 2; }
-
-/* Make stats FULL WIDTH and below hero, never beside logo */
-.hero-stats{
-  position: relative;
-  left: auto;
-  bottom: auto;
-  transform: none;
-
-  width: 100%;
-  max-width: 100%;
-  margin: 0.75rem auto 0;
-  padding: 0.5rem 0 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  white-space: normal;
-}
-
-.hero-stat{ width: 100%; }
-
-  /* optional micro-safety: helps the hero text breathe on small screens */
+  .hero-inner { padding-top: calc(var(--nav-h) + 0.5rem); padding-bottom: 1.5rem; }
   .hero-content { padding: 0.75rem 0 0; }
   .hero-headline { line-height: 1.05; }
   .hero-sub { margin-bottom: 1.75rem; }
@@ -522,81 +506,45 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .hero-logo-circle { width: 62vw; height: 62vw; max-width: 260px; max-height: 260px; }
   .hero-img-wrap .logo-ring-1 { width: calc(62vw + 30px); height: calc(62vw + 30px); max-width: 290px; max-height: 290px; }
   .hero-img-wrap .logo-ring-2 { width: calc(62vw + 60px); height: calc(62vw + 60px); max-width: 320px; max-height: 320px; }
-  .hero-img-wrap { padding: 0rem 0; }
+  .hero-img-wrap { padding: 0; }
 
-  /* HERO STATS - STACKED (prevents bunching on iPhone) */
-  .hero-stats{
-  position: relative !important;
-  left: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-
-    width: 100%;
-    max-width: 100%;
-    white-space: normal;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-    padding: 0.5rem 0 0;
-  }
-  .hero-stat { text-align: center; }
-  .hero-stat strong { font-size: 1.5rem; }
-
-  /* Logo image sizing + vertical position inside circle */
   .hero-logo-circle img { width: 142%; height: 142%; margin-top: 18px; }
 
-  /* SERVICES */
   .services-grid { grid-template-columns: 1fr; }
 
-  /* ABOUT */
   .about-logo-circle { width: 50vw; height: 50vw; max-width: 180px; max-height: 180px; }
   .about-img-wrap .logo-ring-1 { width: calc(50vw + 25px); height: calc(50vw + 25px); max-width: 205px; max-height: 205px; }
   .about-img-wrap .logo-ring-2 { width: calc(50vw + 50px); height: calc(50vw + 50px); max-width: 230px; max-height: 230px; }
 
-  /* BOOKING FORM */
   .booking-form-card { padding: 1.5rem; }
   .form-row { grid-template-columns: 1fr; }
   .type-row { flex-direction: column; }
   .type-opt { min-width: unset; }
 
-  /* FAQ */
   .faq-q { font-size: 1rem; padding: 1rem 0; }
 
-  /* FOOTER */
   .footer-grid { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; text-align: center; }
 }
 
-/* ══════════════════════════════════════════════════
-   RESPONSIVE — Small mobile (max 380px)
-══════════════════════════════════════════════════ */
+/* =====================================================
+   RESPONSIVE - Small mobile (max 380px)
+===================================================== */
 @media (max-width: 380px) {
   .hero-logo-circle { width: 58vw; height: 58vw; max-width: 200px; max-height: 200px; }
   .hero-img-wrap .logo-ring-1 { width: calc(58vw + 25px); height: calc(58vw + 25px); max-width: 225px; max-height: 225px; }
   .hero-img-wrap .logo-ring-2 { width: calc(58vw + 50px); height: calc(58vw + 50px); max-width: 250px; max-height: 250px; }
-
   .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
-
-  /* Keep stacked, just slightly tighter */
-  .hero-stats { gap: 0.6rem; }
   .hero-logo-circle img { width: 142%; height: 142%; margin-top: 16px; }
 }
-
-/* IMPORTANT: CSS ENDS HERE */
 </style>
+
 <script src="logo.js"></script>
 </head>
-<body>
-   
 
-<!-- ═══════════════════════════════════════════
-     NAVBAR
-═══════════════════════════════════════════ -->
+<body>
+
+<!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-inner">
     <a href="#hero" class="nav-logo">
@@ -615,22 +563,22 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════════════
-     HERO
-═══════════════════════════════════════════ -->
+<!-- HERO -->
 <section id="hero">
   <div class="hero-blob hero-blob-1"></div>
   <div class="hero-blob hero-blob-2"></div>
+
   <div class="hero-inner">
     <div class="hero-content">
       <p class="hero-eyebrow">Buford, GA &middot; Licensed Esthetician</p>
       <h1 class="hero-headline">Your Skin,<br><em>Intentionally</em><br>Cared For.</h1>
-      <p class="hero-sub">Licensed esthetician in Buford, GA &mdash; clinically trained, personally invested, and ready to make your skin glow.</p>
+      <p class="hero-sub">Licensed esthetician in Buford, GA - clinically trained, personally invested, and ready to make your skin glow.</p>
       <div class="hero-actions">
         <a href="#booking" class="btn-primary">Book a Service</a>
         <a href="#services" class="btn-outline">View Services</a>
       </div>
     </div>
+
     <div class="logo-img-wrap hero-img-wrap">
       <div class="logo-ring logo-ring-2"></div>
       <div class="logo-ring logo-ring-1"></div>
@@ -639,6 +587,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
       </div>
     </div>
   </div>
+
   <div class="hero-stats">
     <div class="hero-stat"><strong>100%</strong><span>Personalized</span></div>
     <div class="hero-stat"><strong>Buford</strong><span>Georgia</span></div>
@@ -646,23 +595,19 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     SERVICES
-═══════════════════════════════════════════ -->
+<!-- SERVICES -->
 <section id="services">
   <div class="container">
     <div class="services-header slide-up">
       <p class="section-label">What We Offer</p>
       <h2>Services &amp; Treatments</h2>
-      <p>Every service is customized to your skin. All pricing shown is a range &mdash; your exact quote is confirmed at booking.</p>
+      <p>Every service is customized to your skin. All pricing shown is a range - your exact quote is confirmed at booking.</p>
     </div>
     <div id="services-container"></div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     ABOUT
-═══════════════════════════════════════════ -->
+<!-- ABOUT -->
 <section id="about">
   <div class="container">
     <div class="about-grid">
@@ -674,8 +619,9 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
             <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
           </div>
         </div>
-        <div class="about-cert-tag">Licensed Esthetician &mdash; School of Skin &amp; Nail Care, Sandy Springs GA</div>
+        <div class="about-cert-tag">Licensed Esthetician - School of Skin &amp; Nail Care, Sandy Springs GA</div>
       </div>
+
       <div class="about-text slide-right">
         <p class="section-label">Your Esthetician</p>
         <h2>Meet Your Esthetician</h2>
@@ -686,24 +632,23 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     BOOKING
-═══════════════════════════════════════════ -->
+<!-- BOOKING -->
 <section id="booking">
   <div class="container">
     <div class="booking-layout">
       <div class="booking-info slide-left">
         <p class="section-label">Get Started</p>
         <h2>Book or Express Interest</h2>
-        <p>Fill out the form and I&#39;ll reach out within 24&ndash;48 hours to confirm your appointment or answer any questions.</p>
-        <div class="booking-note">Not sure what service you need? Pick &ldquo;Not Sure Yet&rdquo; and we&rsquo;ll figure it out together.</div>
+        <p>Fill out the form and I'll reach out within 24-48 hours to confirm your appointment or answer any questions.</p>
+        <div class="booking-note">Not sure what service you need? Pick "Not Sure Yet" and we'll figure it out together.</div>
         <div class="booking-features">
           <div class="booking-feature"><span class="booking-feature-icon">📋</span>Full skin consultation with every new client</div>
           <div class="booking-feature"><span class="booking-feature-icon">🌿</span>All treatments customized for your skin type</div>
-          <div class="booking-feature"><span class="booking-feature-icon">📍</span>Buford, GA &mdash; location details sent after booking</div>
+          <div class="booking-feature"><span class="booking-feature-icon">📍</span>Buford, GA - location details sent after booking</div>
           <div class="booking-feature"><span class="booking-feature-icon">💜</span>New clients always welcome</div>
         </div>
       </div>
+
       <div class="booking-form-card slide-right">
         <div class="form-success" id="form-success"></div>
         <div class="form-error" id="form-error"></div>
@@ -718,6 +663,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
               <input type="text" id="last-name" class="form-input" placeholder="Smith" required autocomplete="family-name"/>
             </div>
           </div>
+
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="phone">Phone <span class="req">*</span></label>
@@ -728,26 +674,31 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
               <input type="email" id="email" class="form-input" placeholder="jane@email.com" required autocomplete="email"/>
             </div>
           </div>
+
           <div class="form-group">
             <label class="form-label" for="address">Address</label>
             <input type="text" id="address" class="form-input" placeholder="123 Main St, Buford, GA 30518" autocomplete="street-address"/>
           </div>
+
           <div class="form-group">
             <label class="form-label">Services Interested In <span class="req">*</span></label>
             <div class="service-checkboxes" id="service-checkboxes"></div>
           </div>
+
           <div class="form-group">
-            <label class="form-label">I&#39;m Looking to&hellip;</label>
+            <label class="form-label">I'm Looking to...</label>
             <div class="type-row">
               <div class="type-opt"><input type="radio" name="btype" id="t-book" value="Booking Request"/><label for="t-book">📅 Book an Appointment</label></div>
               <div class="type-opt"><input type="radio" name="btype" id="t-info" value="Info Request" checked/><label for="t-info">💬 Get More Info</label></div>
               <div class="type-opt"><input type="radio" name="btype" id="t-notify" value="Coming Soon Notification"/><label for="t-notify">🔔 Get Notified</label></div>
             </div>
           </div>
+
           <div class="form-group">
             <label class="form-label" for="notes">Notes / Questions</label>
-            <textarea id="notes" class="form-textarea" placeholder="Skin concerns, allergies, preferred dates/times&hellip;"></textarea>
+            <textarea id="notes" class="form-textarea" placeholder="Skin concerns, allergies, preferred dates/times..."></textarea>
           </div>
+
           <button type="submit" id="submit-btn">Send Booking Request</button>
         </form>
       </div>
@@ -755,9 +706,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     FAQ
-═══════════════════════════════════════════ -->
+<!-- FAQ -->
 <section id="faq">
   <div class="container">
     <div class="faq-header slide-up">
@@ -769,9 +718,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════ -->
+<!-- FOOTER -->
 <footer>
   <div class="container">
     <div class="footer-grid">
@@ -782,6 +729,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
         </div>
         <p class="footer-tagline">Skin that glows from intention, not accident.</p>
       </div>
+
       <div class="footer-col">
         <h4>Navigate</h4>
         <nav class="footer-links">
@@ -792,12 +740,14 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
           <a href="#booking">Book Now</a>
         </nav>
       </div>
+
       <div class="footer-col">
         <h4>Contact</h4>
         <div class="footer-contact-item"><span class="footer-contact-icon">📍</span><span>Buford, GA</span></div>
         <div class="footer-contact-item"><span class="footer-contact-icon">🕐</span><span>By appointment only</span></div>
       </div>
     </div>
+
     <div class="footer-bottom">
       <span id="footer-copy"></span>
       <span>Located in Buford, GA &middot; By appointment only</span>
@@ -807,72 +757,58 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
 
 <script>
 // =====================================================
-//  TESESTHETICS — ALL JAVASCRIPT
-//
-//  ✏️ EASY EDIT SECTIONS:
-//  1. SERVICES DATA  — add/change/remove services
-//  2. ABOUT & FAQ    — bio paragraphs, FAQ Q&A
-//  3. GOOGLE SHEETS  — paste your endpoint URL here
+//  TESESTHETICS - ALL JAVASCRIPT
 // =====================================================
 
-
-// ╔═════════════════════════════════════════════════╗
-// ║  1. SERVICES DATA                               ║
-// ║  available: true  = live, bookable              ║
-// ║  comingSoon: true = grayed out, not bookable    ║
-// ╚═════════════════════════════════════════════════╝
 const SERVICES = [
-  // ── FACIALS ─────────────────────────────────────
   {
     id:"signature-facial", name:"Custom / Signature Facial", category:"Facials",
-    duration:"60 min", price:"$95 – $115", icon:"✦", available:true, comingSoon:false,
-    description:"A fully personalized facial built around your skin's unique needs. Deep cleansing, steam, extractions, mask, and targeted serums — no two treatments are the same.",
+    duration:"60 min", price:"$95 - $115", icon:"✦", available:true, comingSoon:false,
+    description:"A fully personalized facial built around your skin's unique needs. Deep cleansing, steam, extractions, mask, and targeted serums - no two treatments are the same.",
     bullets:["Full skin analysis & consultation","Steam & gentle extractions","Custom mask & serum treatment","Facial massage & moisturizer","SPF finishing touch"]
   },
   {
     id:"express-facial", name:"Express Facial", category:"Facials",
-    duration:"30 min", price:"$65 – $80", icon:"✦", available:true, comingSoon:false,
+    duration:"30 min", price:"$65 - $80", icon:"✦", available:true, comingSoon:false,
     description:"A focused skin refresh for when you're short on time but still want results. Cleanse, treat, protect.",
     bullets:["Cleanse & tone","Targeted serum application","Moisturize & protect","Perfect before an event or as maintenance"]
   },
   {
     id:"dermaplane-facial", name:"Dermaplane Facial", category:"Facials",
-    duration:"50 – 60 min", price:"$110 – $130", icon:"✦", available:true, comingSoon:false,
+    duration:"50 - 60 min", price:"$110 - $130", icon:"✦", available:true, comingSoon:false,
     description:"A brightening treatment that gently removes dead skin cells and peach fuzz for a visibly smoother, glowing complexion. Also available as an add-on to any facial.",
-    bullets:["Manual exfoliation with sterile surgical blade","Removes vellus hair (peach fuzz)","Instantly smoother, brighter skin","Enhances serum & moisturizer absorption","Add-on to existing facial: +$25 – $40"]
+    bullets:["Manual exfoliation with sterile surgical blade","Removes vellus hair (peach fuzz)","Instantly smoother, brighter skin","Enhances serum & moisturizer absorption","Add-on to existing facial: +$25 - $40"]
   },
   {
     id:"chemical-peel", name:"Light Chemical Peel", category:"Facials",
-    duration:"45 – 60 min", price:"$85 – $120", icon:"✦", available:false, comingSoon:true,
+    duration:"45 - 60 min", price:"$85 - $120", icon:"✦", available:false, comingSoon:true,
     description:"A beginner-friendly peel targeting dullness, uneven texture, and mild discoloration. Pricing varies by peel type and expected downtime.",
     bullets:["Lactic, glycolic, or mandelic options","Minimal to no downtime","Ideal for first-time peel clients","Post-peel care protocol included"]
   },
-  // ── WAXING ──────────────────────────────────────
   {
     id:"brow-wax", name:"Brow Shaping", category:"Waxing",
-    duration:"15 min", price:"$15 – $25", icon:"◆", available:true, comingSoon:false,
+    duration:"15 min", price:"$15 - $25", icon:"◆", available:true, comingSoon:false,
     description:"Clean, defined brows shaped to your natural arch and personal preference.",
     bullets:["Consultation for desired shape","Hard or soft wax","Precise clean-up tweezing","Soothing post-wax oil"]
   },
   {
     id:"lip-wax", name:"Lip Wax", category:"Waxing",
-    duration:"10 min", price:"$10 – $20", icon:"◆", available:true, comingSoon:false,
+    duration:"10 min", price:"$10 - $20", icon:"◆", available:true, comingSoon:false,
     description:"Quick, smooth upper lip waxing with minimal irritation.",
     bullets:["Gentle hard wax formula","Fast & comfortable","Calming post-wax serum"]
   },
   {
     id:"chin-wax", name:"Chin Wax", category:"Waxing",
-    duration:"10 min", price:"$12 – $20", icon:"◆", available:true, comingSoon:false,
+    duration:"10 min", price:"$12 - $20", icon:"◆", available:true, comingSoon:false,
     description:"Precise chin waxing using hard wax suited for sensitive skin.",
     bullets:["Hard wax formula","Quick & precise","Soothing finish"]
   },
   {
     id:"face-wax", name:"Full Face Wax", category:"Waxing",
-    duration:"30 min", price:"$45 – $75", icon:"◆", available:true, comingSoon:false,
-    description:"Complete facial hair removal — brows, lip, chin, sides of face, and forehead.",
+    duration:"30 min", price:"$45 - $75", icon:"◆", available:true, comingSoon:false,
+    description:"Complete facial hair removal - brows, lip, chin, sides of face, and forehead.",
     bullets:["Brows, lip, chin & sides","Hard wax for sensitive areas","Soothing finish serum"]
   },
-  // ── ADVANCED (COMING SOON) ──────────────────────
   {
     id:"led-therapy", name:"LED Light Therapy", category:"Advanced Treatments",
     duration:"20 min add-on", price:"$30 add-on", icon:"◈", available:false, comingSoon:true,
@@ -883,66 +819,28 @@ const SERVICES = [
     id:"lash-tint", name:"Lash & Brow Tinting", category:"Advanced Treatments",
     duration:"30 min", price:"TBD", icon:"◈", available:false, comingSoon:true,
     description:"Semi-permanent tint to define lashes and brows without daily mascara.",
-    bullets:["Patch test required 24 hrs prior","Multiple shades available","Lasts 4 – 6 weeks"]
+    bullets:["Patch test required 24 hrs prior","Multiple shades available","Lasts 4 - 6 weeks"]
   }
 ];
 const CATEGORIES = ["Facials","Waxing","Advanced Treatments"];
 
-
-// ╔═════════════════════════════════════════════════╗
-// ║  2. ABOUT & FAQ CONTENT                         ║
-// ║  Each string in BIO = one paragraph.            ║
-// ║  Use \' for apostrophes inside strings.         ║
-// ╚═════════════════════════════════════════════════╝
 const BIO = [
-  "Hi, I\'m Veronica — a licensed esthetician based in Buford, GA, originally from the beautiful city of Guadalajara, Mexico. Growing up, I was surrounded by a culture that celebrates taking care of yourself with intention and pride, and that spirit shapes everything I do.",
-  "Before esthetics, I built my career in dentistry — training as a dentist in Mexico and working as a dental assistant here in Georgia. That background gave me a deep understanding of facial anatomy, precision, and the kind of trust a client places in someone who works up close. When I\'m working on your skin, I\'m not guessing — I understand what\'s beneath it.",
-  "Making the transition into esthetics felt completely natural. The attention to detail, the care for the person in front of you, the commitment to real results — it\'s the same philosophy, just a different canvas. I\'m just getting started here in Buford and would be honored to have you as one of my first clients. Come as you are. Leave glowing."
+  "Hi, I\\'m Veronica - a licensed esthetician based in Buford, GA, originally from the beautiful city of Guadalajara, Mexico. Growing up, I was surrounded by a culture that celebrates taking care of yourself with intention and pride, and that spirit shapes everything I do.",
+  "Before esthetics, I built my career in dentistry - training as a dentist in Mexico and working as a dental assistant here in Georgia. That background gave me a deep understanding of facial anatomy, precision, and the kind of trust a client places in someone who works up close. When I\\'m working on your skin, I\\'m not guessing - I understand what\\'s beneath it.",
+  "Making the transition into esthetics felt completely natural. The attention to detail, the care for the person in front of you, the commitment to real results - it\\'s the same philosophy, just a different canvas. I\\'m just getting started here in Buford and would be honored to have you as one of my first clients. Come as you are. Leave glowing."
 ];
 
 const FAQS = [
-  {
-    q: "Do I need to do anything to prepare for my facial?",
-    a: "Come with a clean face if possible, but don\'t stress if you can\'t — we\'ll handle it. Avoid retinol or exfoliating acids for 24–48 hours before your appointment, and let me know about any allergies or medications when you book."
-  },
-  {
-    q: "How often should I get a facial?",
-    a: "For most skin types, every 4–6 weeks is the sweet spot — it lines up with your skin\'s natural cell turnover cycle. That said, we\'ll put together a plan that actually fits your schedule and goals."
-  },
-  {
-    q: "Is waxing okay for sensitive skin?",
-    a: "Yes! I use hard wax on sensitive areas, which adheres to the hair rather than the skin and is much gentler. Just let me know your skin type when booking and I\'ll adjust accordingly."
-  },
-  {
-    q: "What is dermaplaning and is it safe?",
-    a: "Dermaplaning is a manual exfoliation technique using a sterile surgical blade to gently remove dead skin cells and fine vellus hair (peach fuzz). It\'s safe for most skin types and leaves your skin noticeably smoother and brighter. It does not make hair grow back thicker — that\'s a myth!"
-  },
-  {
-    q: "I\'ve never had a facial before — what should I expect?",
-    a: "Welcome! We start with a quick skin consultation, then you relax while I take care of everything — cleansing, steam, extractions if needed, a mask, and moisturizing. Most first-timers leave wondering why they waited so long."
-  },
-  {
-    q: "What areas do you serve?",
-    a: "I\'m based in Buford, GA and serve the Buford, Sugar Hill, Suwanee, Cumming, and surrounding Gwinnett and Forsyth County areas."
-  },
-  {
-    q: "What\'s your cancellation policy?",
-    a: "Life happens — I just ask for at least 24 hours notice if you need to reschedule. I\'ll always be upfront and fair about it."
-  }
+  { q:"Do I need to do anything to prepare for my facial?", a:"Come with a clean face if possible, but don't stress if you can't - we'll handle it. Avoid retinol or exfoliating acids for 24-48 hours before your appointment, and let me know about any allergies or medications when you book." },
+  { q:"How often should I get a facial?", a:"For most skin types, every 4-6 weeks is the sweet spot - it lines up with your skin's natural cell turnover cycle. That said, we'll put together a plan that actually fits your schedule and goals." },
+  { q:"Is waxing okay for sensitive skin?", a:"Yes! I use hard wax on sensitive areas, which adheres to the hair rather than the skin and is much gentler. Just let me know your skin type when booking and I'll adjust accordingly." },
+  { q:"What is dermaplaning and is it safe?", a:"Dermaplaning is a manual exfoliation technique using a sterile surgical blade to gently remove dead skin cells and fine vellus hair (peach fuzz). It's safe for most skin types and leaves your skin noticeably smoother and brighter. It does not make hair grow back thicker - that's a myth!" },
+  { q:"I've never had a facial before - what should I expect?", a:"Welcome! We start with a quick skin consultation, then you relax while I take care of everything - cleansing, steam, extractions if needed, a mask, and moisturizing. Most first-timers leave wondering why they waited so long." },
+  { q:"What areas do you serve?", a:"I'm based in Buford, GA and serve the Buford, Sugar Hill, Suwanee, Cumming, and surrounding Gwinnett and Forsyth County areas." },
+  { q:"What's your cancellation policy?", a:"Life happens - I just ask for at least 24 hours notice if you need to reschedule. I'll always be upfront and fair about it." }
 ];
 
-
-// ╔═════════════════════════════════════════════════╗
-// ║  3. GOOGLE SHEETS ENDPOINT                      ║
-// ║  Replace the string below with your Apps        ║
-// ║  Script Web App URL. See README for setup.      ║
-// ╚═════════════════════════════════════════════════╝
 const SHEETS_ENDPOINT = "YOUR_APPS_SCRIPT_URL_HERE";
-
-
-// ─────────────────────────────────────────────────
-//  RENDER & LOGIC — no need to edit below this line
-// ─────────────────────────────────────────────────
 
 function renderServices() {
   const container = document.getElementById("services-container");
@@ -954,6 +852,7 @@ function renderServices() {
     sec.innerHTML = `<h3 class="category-label">${cat}</h3>`;
     const grid = document.createElement("div");
     grid.className = "services-grid";
+
     catServices.forEach(s => {
       const card = document.createElement("div");
       card.className = "service-card" + (s.comingSoon ? " coming-soon" : "");
@@ -977,17 +876,18 @@ function renderServices() {
       `;
       grid.appendChild(card);
     });
+
     sec.appendChild(grid);
     container.appendChild(sec);
   });
 
-  // Populate service checkboxes in booking form
   const checkboxContainer = document.getElementById("service-checkboxes");
   CATEGORIES.forEach(cat => {
     const groupLabel = document.createElement("div");
     groupLabel.className = "checkbox-group-label";
     groupLabel.textContent = cat;
     checkboxContainer.appendChild(groupLabel);
+
     SERVICES.filter(s => s.category === cat).forEach(s => {
       const item = document.createElement("div");
       item.className = "checkbox-item" + (s.comingSoon ? " coming-soon-check" : "");
@@ -1003,7 +903,6 @@ function renderServices() {
     });
   });
 
-  // Not sure yet option
   const notSureItem = document.createElement("div");
   notSureItem.className = "checkbox-item";
   const notSureCb = document.createElement("input");
@@ -1011,7 +910,7 @@ function renderServices() {
   notSureCb.addEventListener("change", updateSelectedCount);
   const notSureLbl = document.createElement("label");
   notSureLbl.htmlFor = "cb-not-sure";
-  notSureLbl.textContent = "Not Sure Yet — Let\'s Chat!";
+  notSureLbl.textContent = "Not Sure Yet - Let's Chat!";
   notSureItem.appendChild(notSureCb); notSureItem.appendChild(notSureLbl);
   checkboxContainer.appendChild(notSureItem);
 
@@ -1086,14 +985,17 @@ function initNav() {
   const hamburger = document.getElementById("hamburger");
   const menu = document.getElementById("nav-menu");
   const navbar = document.getElementById("navbar");
+
   hamburger.addEventListener("click", () => {
     hamburger.classList.toggle("open");
     menu.classList.toggle("open");
   });
+
   menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
     hamburger.classList.remove("open");
     menu.classList.remove("open");
   }));
+
   window.addEventListener("scroll", () => {
     navbar.classList.toggle("scrolled", window.scrollY > 60);
     let current = "";
@@ -1153,6 +1055,7 @@ async function handleSubmit(e) {
     errorEl.textContent = "Please select at least one service.";
     errorEl.style.display = "block"; return;
   }
+
   const service = Array.from(checkedBoxes).map(cb => {
     const s = SERVICES.find(s => s.id === cb.value);
     return s ? s.name : "Not Sure Yet";
@@ -1171,7 +1074,7 @@ async function handleSubmit(e) {
   }
 
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Sending\u2026';
+  btn.innerHTML = '<span class="spinner"></span> Sending...';
 
   const payload = {
     timestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }),
@@ -1181,7 +1084,7 @@ async function handleSubmit(e) {
   if (SHEETS_ENDPOINT === "YOUR_APPS_SCRIPT_URL_HERE") {
     await new Promise(r => setTimeout(r, 1200));
     showSuccess(successEl, btn);
-    console.log("Demo mode — data:", payload);
+    console.log("Demo mode - data:", payload);
     return;
   }
 
@@ -1201,7 +1104,7 @@ async function handleSubmit(e) {
 }
 
 function showSuccess(el, btn) {
-  el.textContent = "You\'re all set! 🌸 I\'ll be in touch within 24–48 hours. Can\'t wait to meet you!";
+  el.textContent = "You're all set! 🌸 I'll be in touch within 24-48 hours. Can't wait to meet you!";
   el.style.display = "block";
   btn.innerHTML = "✓ Request Sent!";
   btn.style.background = "var(--success)";
