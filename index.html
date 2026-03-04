@@ -193,7 +193,8 @@ section { padding: 6rem 0; }
   display: flex; align-items: center; justify-content: center; overflow: hidden;
   animation: floatLogo 5s ease-in-out infinite; position: relative; z-index: 2;
 }
-.hero-logo-circle img { width: 140%; height: 140%; object-fit: cover; display: block; margin-top: 20px; }
+/* CHANGED: margin-top reduced so logo sits higher inside rings */
+.hero-logo-circle img { width: 140%; height: 140%; object-fit: cover; display: block; margin-top: 18px; }
 
 /* About sizing — mirrors hero exactly, just smaller */
 .about-img-wrap .logo-ring-1 {
@@ -482,6 +483,9 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .hero-stats { position: relative; bottom: auto; left: auto; transform: none; justify-content: center; flex-wrap: wrap; gap: 1.25rem; padding: 1rem 0; }
   .hero-stat strong { font-size: 1.5rem; }
 
+  /* CHANGED: nudge logo image a bit higher on mobile */
+  .hero-logo-circle img { margin-top: 10px; }
+
   /* SERVICES */
   .services-grid { grid-template-columns: 1fr; }
 
@@ -513,6 +517,9 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .hero-img-wrap .logo-ring-2 { width: calc(58vw + 50px); height: calc(58vw + 50px); max-width: 250px; max-height: 250px; }
   .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
   .hero-stats { gap: 1rem; }
+
+  /* CHANGED: tiny screens, a touch higher */
+  .hero-logo-circle img { margin-top: 8px; }
 }
 </style>
 <script src="logo.js"></script>
