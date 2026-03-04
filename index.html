@@ -451,6 +451,7 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
 }
 
 /* ══════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    RESPONSIVE — Mobile (max 640px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 640px) {
@@ -464,7 +465,8 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
     position: fixed; top: var(--nav-h); left: 0; right: 0;
     background: rgba(250,247,242,0.98); backdrop-filter: blur(16px);
     flex-direction: column; align-items: center; gap: 0; padding: 0;
-    max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease;
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
     box-shadow: 0 4px 20px rgba(139,74,40,0.08);
   }
   #nav-menu.open { max-height: 500px; padding: 1.25rem 0; }
@@ -475,16 +477,46 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .nav-logo img { width: 36px; height: 36px; }
 
   /* HERO */
-  .hero-inner { padding-top: calc(var(--nav-h) + 0.5rem); padding-bottom: 2rem; }
+  .hero-inner {
+    padding-top: calc(var(--nav-h) + 0.5rem);
+    padding-bottom: 1.5rem;
+  }
+
+  /* optional micro-safety: helps the hero text breathe on small screens */
+  .hero-content { padding: 0.75rem 0 0; }
+  .hero-headline { line-height: 1.05; }
+  .hero-sub { margin-bottom: 1.75rem; }
+
   .hero-logo-circle { width: 62vw; height: 62vw; max-width: 260px; max-height: 260px; }
   .hero-img-wrap .logo-ring-1 { width: calc(62vw + 30px); height: calc(62vw + 30px); max-width: 290px; max-height: 290px; }
   .hero-img-wrap .logo-ring-2 { width: calc(62vw + 60px); height: calc(62vw + 60px); max-width: 320px; max-height: 320px; }
   .hero-img-wrap { padding: 0rem 0; }
-  .hero-stats { position: relative; bottom: auto; left: auto; transform: none; justify-content: center; flex-wrap: wrap; gap: 1.25rem; padding: 1rem 0; }
+
+  /* HERO STATS - STACKED (prevents bunching on iPhone) */
+  .hero-stats{
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem 0 0;
+  }
+  .hero-stat { text-align: center; }
   .hero-stat strong { font-size: 1.5rem; }
 
-  /* CHANGED: nudge logo image a bit higher on mobile */
-   .hero-logo-circle img { width: 142%; height: 142%; margin-top: 18px; }
+  /* Logo image sizing + vertical position inside circle */
+  .hero-logo-circle img { width: 142%; height: 142%; margin-top: 18px; }
 
   /* SERVICES */
   .services-grid { grid-template-columns: 1fr; }
@@ -515,37 +547,13 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   .hero-logo-circle { width: 58vw; height: 58vw; max-width: 200px; max-height: 200px; }
   .hero-img-wrap .logo-ring-1 { width: calc(58vw + 25px); height: calc(58vw + 25px); max-width: 225px; max-height: 225px; }
   .hero-img-wrap .logo-ring-2 { width: calc(58vw + 50px); height: calc(58vw + 50px); max-width: 250px; max-height: 250px; }
-  .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
-  .hero-stats { gap: 1rem; }
 
-  /* CHANGED: tiny screens, a touch higher */
+  .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
+
+  /* Keep stacked, just slightly tighter */
+  .hero-stats { gap: 0.6rem; }
   .hero-logo-circle img { width: 142%; height: 142%; margin-top: 16px; }
 }
-</style>
-<script src="logo.js"></script>
-</head>
-<body>
-
-<!-- ═══════════════════════════════════════════
-     NAVBAR
-═══════════════════════════════════════════ -->
-<nav id="navbar">
-  <div class="nav-inner">
-    <a href="#hero" class="nav-logo">
-      <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
-      <span>Tesesthetics</span>
-    </a>
-    <ul id="nav-menu">
-      <li><a href="#services" class="nav-link">Services</a></li>
-      <li><a href="#about" class="nav-link">About</a></li>
-      <li><a href="#faq" class="nav-link">FAQ</a></li>
-      <li><a href="#booking" class="nav-link nav-cta">Book Now</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
 
 <!-- ═══════════════════════════════════════════
      HERO
