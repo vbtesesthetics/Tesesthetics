@@ -11,44 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-/* Force mobile stacking on real phones even if "desktop site" is requested */
-@media (hover: none) and (pointer: coarse) {
-  .hero-inner {
-    grid-template-columns: 1fr !important;
-    text-align: center !important;
-  }
 
-  .hero-content,
-  .hero-img-wrap,
-  .hero-stats {
-    grid-column: 1 / -1 !important;
-  }
-
-  .hero-stats {
-    position: static !important;
-    left: auto !important;
-    bottom: auto !important;
-    transform: none !important;
-
-    width: 100% !important;
-    max-width: 100% !important;
-
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    white-space: normal !important;
-    margin: 0.75rem auto 0 !important;
-    padding-top: 0.5rem !important;
-    gap: 0.75rem !important;
-  }
-
-  .hero-stat {
-    width: 100% !important;
-    text-align: center !important;
-  }
-}
 <style>
 /* =====================================================
    TESESTHETICS - ALL STYLES
@@ -625,6 +588,44 @@ footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 
   }
 
   .hero-stat{
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+  /* Force mobile stacking on real phones even if "desktop site" is requested */
+@media (hover: none) and (pointer: coarse) {
+  .hero-inner {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+  }
+
+  .hero-content,
+  .hero-img-wrap,
+  .hero-stats {
+    grid-column: 1 / -1 !important;
+  }
+
+  .hero-stats {
+    position: static !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    white-space: normal !important;
+    margin: 0.75rem auto 0 !important;
+    padding-top: 0.5rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .hero-stat {
     width: 100% !important;
     text-align: center !important;
   }
