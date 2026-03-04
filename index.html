@@ -16,7 +16,7 @@
    TESESTHETICS — ALL STYLES
    Brand: Lavender #C5A4E8 + Bronze #8B4A28
    Fonts: Cormorant Garamond (display) + Jost (body)
-   To change colors: edit :root variables below
+   To change colors: edit the :root variables below
    ===================================================== */
 
 :root {
@@ -45,470 +45,469 @@
   --font-body:      'Jost', sans-serif;
 }
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
-body{font-family:var(--font-body);background:var(--cream);color:var(--text);line-height:1.7;overflow-x:hidden}
-img{max-width:100%;display:block}
-a{color:inherit;text-decoration:none}
-button{cursor:pointer;border:none;font-family:var(--font-body)}
-ul{list-style:none}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--font-body); background: var(--cream); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; font-family: var(--font-body); }
+ul { list-style: none; }
 
-h1,h2,h3,h4{font-family:var(--font-display);font-weight:400;line-height:1.15}
-h1{font-size:clamp(2.8rem,6vw,5rem)}
-h2{font-size:clamp(2rem,4vw,3.2rem)}
-h3{font-size:clamp(1.5rem,3vw,2.2rem)}
-h4{font-size:clamp(1.1rem,2vw,1.5rem)}
+h1,h2,h3,h4 { font-family: var(--font-display); font-weight: 400; line-height: 1.15; }
+h1 { font-size: clamp(2.2rem, 5vw, 5rem); }
+h2 { font-size: clamp(1.8rem, 4vw, 3.2rem); }
+h3 { font-size: clamp(1.3rem, 3vw, 2.2rem); }
+h4 { font-size: clamp(1rem, 2vw, 1.5rem); }
 
-.container{max-width:1160px;margin:0 auto;padding:0 2rem}
-section{padding:7rem 0}
+.container { max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
+section { padding: 6rem 0; }
 
-.section-label{
-  font-family:var(--font-body);font-size:0.7rem;font-weight:600;
-  letter-spacing:0.25em;text-transform:uppercase;color:var(--bronze-light);
-  display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem
+.section-label {
+  font-family: var(--font-body); font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--bronze-light);
+  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
 }
-.section-label::before{content:"";width:32px;height:1px;background:var(--bronze-light);display:block}
+.section-label::before { content: ""; width: 32px; height: 1px; background: var(--bronze-light); display: block; }
 
 /* SCROLL ANIMATIONS */
-.fade-in,.slide-up,.slide-left,.slide-right{opacity:0;transition:opacity 0.7s ease,transform 0.7s ease}
-.slide-up{transform:translateY(40px)}
-.slide-left{transform:translateX(-40px)}
-.slide-right{transform:translateX(40px)}
-.fade-in.visible,.slide-up.visible,.slide-left.visible,.slide-right.visible{opacity:1;transform:none}
+.fade-in,.slide-up,.slide-left,.slide-right { opacity: 0; transition: opacity 0.7s ease, transform 0.7s ease; }
+.slide-up { transform: translateY(40px); }
+.slide-left { transform: translateX(-40px); }
+.slide-right { transform: translateX(40px); }
+.fade-in.visible,.slide-up.visible,.slide-left.visible,.slide-right.visible { opacity: 1; transform: none; }
+
+/* ── SHARED LOGO + RING ANIMATION ── */
+/* Used in both hero and about sections */
+@keyframes floatLogo { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes rotateRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 /* ── NAVBAR ── */
-#navbar{
-  position:fixed;top:0;left:0;right:0;z-index:999;
-  height:var(--nav-h);display:flex;align-items:center;
-  transition:background var(--ease),box-shadow var(--ease)
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  height: var(--nav-h); display: flex; align-items: center;
+  transition: background var(--ease), box-shadow var(--ease);
 }
-#navbar.scrolled{
-  background:rgba(250,247,242,0.96);
-  backdrop-filter:blur(16px);
-  box-shadow:0 2px 20px rgba(139,74,40,0.08)
+#navbar.scrolled {
+  background: rgba(250,247,242,0.96);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 2px 20px rgba(139,74,40,0.08);
 }
-.nav-inner{
-  display:flex;align-items:center;justify-content:space-between;
-  width:100%;max-width:1160px;margin:0 auto;padding:0 2rem
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 1.5rem;
 }
-.nav-logo{display:flex;align-items:center;gap:0.75rem;font-family:var(--font-display);font-size:1.4rem;color:var(--bronze)}
-.nav-logo img{width:44px;height:44px;object-fit:contain;mix-blend-mode:normal}
-#nav-menu{display:flex;align-items:center;gap:2.5rem}
-.nav-link{
-  font-size:0.78rem;font-weight:500;letter-spacing:0.12em;
-  text-transform:uppercase;color:var(--text-muted);position:relative;transition:color var(--ease)
+.nav-logo { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-display); font-size: 1.4rem; color: var(--bronze); }
+.nav-logo img { width: 44px; height: 44px; object-fit: contain; }
+#nav-menu { display: flex; align-items: center; gap: 2rem; }
+.nav-link {
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-muted); position: relative; transition: color var(--ease);
 }
-.nav-link::after{
-  content:"";position:absolute;bottom:-3px;left:0;
-  width:0;height:1px;background:var(--bronze);transition:width var(--ease)
+.nav-link::after {
+  content: ""; position: absolute; bottom: -3px; left: 0;
+  width: 0; height: 1px; background: var(--bronze); transition: width var(--ease);
 }
-.nav-link:hover,.nav-link.active{color:var(--bronze)}
-.nav-link:hover::after,.nav-link.active::after{width:100%}
-.nav-cta{
-  font-size:0.75rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;
-  padding:0.6rem 1.4rem;background:var(--bronze);color:var(--white);border-radius:30px;
-  transition:background var(--ease),transform var(--ease)
+.nav-link:hover,.nav-link.active { color: var(--bronze); }
+.nav-link:hover::after,.nav-link.active::after { width: 100%; }
+.nav-cta {
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.6rem 1.4rem; background: var(--bronze); color: var(--white); border-radius: 30px;
+  transition: background var(--ease), transform var(--ease);
+  white-space: nowrap;
 }
-.nav-cta:hover{background:var(--bronze-light);transform:translateY(-1px)}
-.hamburger{display:none;flex-direction:column;gap:5px;background:none;padding:4px}
-.hamburger span{display:block;width:24px;height:2px;background:var(--bronze);border-radius:2px;transition:var(--ease)}
-.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.hamburger.open span:nth-child(2){opacity:0}
-.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-cta:hover { background: var(--bronze-light); transform: translateY(-1px); }
+.hamburger { display: none; flex-direction: column; gap: 5px; background: none; padding: 4px; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--bronze); border-radius: 2px; transition: var(--ease); }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ── HERO ── */
-#hero{
-  position:relative;min-height:100svh;display:flex;
-  align-items:center;overflow:hidden;background:var(--lavender-pale);padding:0
+#hero {
+  position: relative; min-height: 100vh; display: flex;
+  align-items: center; overflow: hidden; background: var(--lavender-pale); padding: 0;
 }
-.hero-blob{
-  position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none
+.hero-blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+.hero-blob-1 { width: 600px; height: 600px; top: -100px; right: -100px; background: radial-gradient(circle, rgba(197,164,232,0.35) 0%, transparent 70%); }
+.hero-blob-2 { width: 400px; height: 400px; bottom: 50px; left: -50px; background: radial-gradient(circle, rgba(139,74,40,0.08) 0%, transparent 70%); }
+.hero-inner {
+  position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; gap: 3rem; max-width: 1160px; margin: 0 auto;
+  padding: var(--nav-h) 1.5rem 6rem;
+  width: 100%;
 }
-.hero-blob-1{
-  width:600px;height:600px;top:-100px;right:-100px;
-  background:radial-gradient(circle,rgba(197,164,232,0.35) 0%,transparent 70%)
+.hero-content { padding: 2rem 0; }
+.hero-eyebrow {
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--bronze-light); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;
 }
-.hero-blob-2{
-  width:400px;height:400px;bottom:50px;left:-50px;
-  background:radial-gradient(circle,rgba(139,74,40,0.08) 0%,transparent 70%)
+.hero-eyebrow::before { content: "✦"; font-size: 0.6rem; color: var(--lavender-deep); }
+.hero-headline {
+  font-family: var(--font-display); font-size: clamp(2.6rem, 5.5vw, 5.2rem);
+  font-weight: 300; color: var(--dark); margin-bottom: 1.5rem; line-height: 1.1;
 }
-.hero-inner{
-  position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;
-  align-items:center;gap:4rem;max-width:1160px;margin:0 auto;
-  padding:0 2rem;padding-top:var(--nav-h);min-height:100svh
+.hero-headline em { font-style: italic; color: var(--bronze); }
+.hero-sub { font-size: 1rem; color: var(--text-muted); max-width: 440px; margin-bottom: 2.5rem; line-height: 1.75; }
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+.btn-primary {
+  padding: 0.9rem 2rem; background: var(--bronze); color: var(--white); border-radius: 40px;
+  font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  transition: background var(--ease), transform var(--ease), box-shadow var(--ease);
+  box-shadow: 0 4px 20px rgba(139,74,40,0.25); min-height: 44px; display: inline-flex; align-items: center;
 }
-.hero-content{padding:4rem 0}
-.hero-eyebrow{
-  font-size:0.7rem;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;
-  color:var(--bronze-light);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem
+.btn-primary:hover { background: var(--bronze-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,74,40,0.3); }
+.btn-outline {
+  padding: 0.9rem 2rem; border: 1.5px solid var(--lavender-deep); color: var(--lavender-deep);
+  border-radius: 40px; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; transition: all var(--ease); background: transparent;
+  min-height: 44px; display: inline-flex; align-items: center;
 }
-.hero-eyebrow::before{content:"✦";font-size:0.6rem;color:var(--lavender-deep)}
-.hero-headline{
-  font-family:var(--font-display);font-size:clamp(3rem,6vw,5.2rem);
-  font-weight:300;color:var(--dark);margin-bottom:1.5rem;line-height:1.1
+.btn-outline:hover { background: var(--lavender-deep); color: var(--white); transform: translateY(-2px); }
+
+/* ── LOGO CIRCLE + RINGS (shared hero & about) ── */
+.logo-img-wrap { display: flex; justify-content: center; align-items: center; position: relative; }
+
+.logo-ring {
+  position: absolute; border-radius: 50%; border: 1px solid; animation: rotateRing linear infinite;
 }
-.hero-headline em{font-style:italic;color:var(--bronze)}
-.hero-sub{font-size:1.05rem;color:var(--text-muted);max-width:440px;margin-bottom:2.5rem;line-height:1.75}
-.hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
-.btn-primary{
-  padding:0.9rem 2.2rem;background:var(--bronze);color:var(--white);border-radius:40px;
-  font-size:0.82rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
-  transition:background var(--ease),transform var(--ease),box-shadow var(--ease);
-  box-shadow:0 4px 20px rgba(139,74,40,0.25)
+
+/* Hero sizing */
+.hero-img-wrap .logo-ring-1 {
+  width: calc(clamp(300px, 42vw, 480px) + 50px);
+  height: calc(clamp(300px, 42vw, 480px) + 50px);
+  border-color: rgba(197,164,232,0.3); animation-duration: 20s;
 }
-.btn-primary:hover{background:var(--bronze-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(139,74,40,0.3)}
-.btn-outline{
-  padding:0.9rem 2.2rem;border:1.5px solid var(--lavender-deep);color:var(--lavender-deep);
-  border-radius:40px;font-size:0.82rem;font-weight:600;letter-spacing:0.1em;
-  text-transform:uppercase;transition:all var(--ease);background:transparent
+.hero-img-wrap .logo-ring-2 {
+  width: calc(clamp(300px, 42vw, 480px) + 100px);
+  height: calc(clamp(300px, 42vw, 480px) + 100px);
+  border-color: rgba(139,74,40,0.12); animation-duration: 35s; animation-direction: reverse;
 }
-.btn-outline:hover{background:var(--lavender-deep);color:var(--white);transform:translateY(-2px)}
-.hero-img-wrap{display:flex;justify-content:center;align-items:center;position:relative}
-.hero-logo-ring{
-  position:absolute;border-radius:50%;border:1px solid;animation:rotateRing linear infinite
+.hero-logo-circle {
+  width: clamp(300px, 42vw, 480px); height: clamp(300px, 42vw, 480px);
+  border-radius: 50%; background: transparent;
+  box-shadow: 0 20px 80px rgba(197,164,232,0.35), 0 4px 24px rgba(139,74,40,0.1);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  animation: floatLogo 5s ease-in-out infinite; position: relative; z-index: 2;
 }
-.ring-1{
-  width:calc(clamp(360px,48vw,520px) + 50px);height:calc(clamp(360px,48vw,520px) + 50px);
-  border-color:rgba(197,164,232,0.3);animation-duration:20s
+.hero-logo-circle img { width: 140%; height: 140%; object-fit: cover; display: block; margin-top: 45px; }
+
+/* About sizing — mirrors hero exactly, just smaller */
+.about-img-wrap .logo-ring-1 {
+  width: calc(200px + 40px); height: calc(200px + 40px);
+  border-color: rgba(197,164,232,0.3); animation-duration: 20s;
 }
-.ring-2{
-  width:calc(clamp(360px,48vw,520px) + 100px);height:calc(clamp(360px,48vw,520px) + 100px);
-  border-color:rgba(139,74,40,0.12);animation-duration:35s;animation-direction:reverse
+.about-img-wrap .logo-ring-2 {
+  width: calc(200px + 80px); height: calc(200px + 80px);
+  border-color: rgba(139,74,40,0.12); animation-duration: 35s; animation-direction: reverse;
 }
-.hero-logo-circle{
-  width:clamp(360px,48vw,520px);height:clamp(360px,48vw,520px);border-radius:50%;
-  background:transparent;
-  box-shadow:0 20px 80px rgba(197,164,232,0.35),0 4px 24px rgba(139,74,40,0.1);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-  animation:floatLogo 5s ease-in-out infinite;position:relative;z-index:2
+.about-logo-circle {
+  width: 200px; height: 200px;
+  border-radius: 50%; background: transparent;
+  box-shadow: 0 10px 40px rgba(197,164,232,0.35), 0 4px 16px rgba(139,74,40,0.1);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  animation: floatLogo 5s ease-in-out infinite; position: relative; z-index: 2;
 }
-.hero-logo-circle img{width:140%;height:140%;object-fit:cover;mix-blend-mode:normal;display:block;margin-top:45px}
-.hero-stats{
-  position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
-  display:flex;gap:3rem;z-index:3
+.about-logo-circle img { width: 140%; height: 140%; object-fit: cover; display: block; margin-top: 25px; }
+
+.hero-stats {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 3rem; z-index: 3; white-space: nowrap;
 }
-.hero-stat{text-align:center}
-.hero-stat strong{display:block;font-family:var(--font-display);font-size:2rem;color:var(--bronze);font-weight:300}
-.hero-stat span{font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted)}
-@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-@keyframes rotateRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.hero-stat { text-align: center; }
+.hero-stat strong { display: block; font-family: var(--font-display); font-size: 2rem; color: var(--bronze); font-weight: 300; }
+.hero-stat span { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
 
 /* ── SERVICES ── */
-#services{background:var(--white)}
-.services-header{text-align:center;margin-bottom:4rem}
-.services-header h2{color:var(--dark);margin-bottom:1rem}
-.services-header p{color:var(--text-muted);max-width:540px;margin:0 auto;font-size:1.05rem}
-.service-category{margin-bottom:4rem}
-.category-label{
-  font-family:var(--font-body);font-size:0.68rem;font-weight:600;letter-spacing:0.25em;
-  text-transform:uppercase;color:var(--lavender-deep);margin-bottom:1.5rem;
-  padding-bottom:0.75rem;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:0.75rem
+#services { background: var(--white); }
+.services-header { text-align: center; margin-bottom: 4rem; }
+.services-header h2 { color: var(--dark); margin-bottom: 1rem; }
+.services-header p { color: var(--text-muted); max-width: 540px; margin: 0 auto; font-size: 1rem; }
+.service-category { margin-bottom: 3.5rem; }
+.category-label {
+  font-family: var(--font-body); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--lavender-deep); margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.75rem;
 }
-.category-label::before{content:"◆";font-size:0.5rem}
-.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
-.service-card{
-  background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);
-  padding:1.75rem;transition:transform var(--ease),box-shadow var(--ease),border-color var(--ease);
-  position:relative;overflow:hidden
+.category-label::before { content: "◆"; font-size: 0.5rem; }
+.services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.service-card {
+  background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem; transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
+  position: relative; overflow: hidden;
 }
-.service-card::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--lavender),var(--bronze-light));
-  opacity:0;transition:opacity var(--ease)
+.service-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--lavender), var(--bronze-light));
+  opacity: 0; transition: opacity var(--ease);
 }
-.service-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--lavender)}
-.service-card:hover::before{opacity:1}
-.service-card.coming-soon{opacity:0.72}
-.service-card.coming-soon:hover{transform:none;box-shadow:none}
-.card-icon{font-size:1.2rem;color:var(--bronze-light);display:block;margin-bottom:0.5rem}
-.card-title-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;flex-wrap:wrap}
-.card-name{font-family:var(--font-display);font-size:1.3rem;font-weight:500;color:var(--dark)}
-.badge{font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.22rem 0.65rem;border-radius:20px}
-.available-badge{background:rgba(107,174,139,0.15);color:#4a8b68}
-.coming-soon-badge{background:rgba(197,164,232,0.25);color:var(--lavender-deep)}
-.card-meta{display:flex;align-items:center;gap:1rem;font-size:0.82rem;margin-bottom:1rem}
-.card-duration{color:var(--text-muted)}
-.card-price{font-family:var(--font-display);font-size:1.1rem;color:var(--bronze);font-weight:500}
-.card-description{font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.65}
-.card-bullets{margin-bottom:1.25rem}
-.card-bullets li{font-size:0.82rem;color:var(--text-muted);padding:0.3rem 0 0.3rem 1.2rem;position:relative}
-.card-bullets li::before{content:"—";position:absolute;left:0;color:var(--lavender-deep);font-size:0.7rem}
-.card-book-btn{
-  font-size:0.78rem;font-weight:600;letter-spacing:0.08em;color:var(--bronze);
-  background:transparent;padding:0.5rem 1rem 0.5rem 0;
-  border-bottom:1px solid var(--bronze);transition:all var(--ease)
+.service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--lavender); }
+.service-card:hover::before { opacity: 1; }
+.service-card.coming-soon { opacity: 0.72; }
+.service-card.coming-soon:hover { transform: none; box-shadow: none; }
+.card-icon { font-size: 1.2rem; color: var(--bronze-light); display: block; margin-bottom: 0.5rem; }
+.card-title-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+.card-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; color: var(--dark); }
+.badge { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.22rem 0.65rem; border-radius: 20px; }
+.available-badge { background: rgba(107,174,139,0.15); color: #4a8b68; }
+.coming-soon-badge { background: rgba(197,164,232,0.25); color: var(--lavender-deep); }
+.card-meta { display: flex; align-items: center; gap: 1rem; font-size: 0.82rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
+.card-duration { color: var(--text-muted); }
+.card-price { font-family: var(--font-display); font-size: 1.1rem; color: var(--bronze); font-weight: 500; }
+.card-description { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.65; }
+.card-bullets { margin-bottom: 1.25rem; }
+.card-bullets li { font-size: 0.82rem; color: var(--text-muted); padding: 0.25rem 0 0.25rem 1.2rem; position: relative; }
+.card-bullets li::before { content: "—"; position: absolute; left: 0; color: var(--lavender-deep); font-size: 0.7rem; }
+.card-book-btn {
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; color: var(--bronze);
+  background: transparent; padding: 0.5rem 0; border-bottom: 1px solid var(--bronze);
+  transition: all var(--ease); min-height: 44px; display: inline-flex; align-items: center;
 }
-.card-book-btn:hover{color:var(--bronze-light);border-color:var(--bronze-light);letter-spacing:0.12em}
-.card-notify{font-size:0.75rem;color:var(--lavender-deep);font-style:italic}
+.card-book-btn:hover { color: var(--bronze-light); border-color: var(--bronze-light); letter-spacing: 0.12em; }
+.card-notify { font-size: 0.75rem; color: var(--lavender-deep); font-style: italic; }
+
 /* ── SERVICE CHECKBOXES ── */
 .service-checkboxes {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  max-height: 280px;
-  overflow-y: auto;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 0.75rem;
-  background: var(--white);
+  display: flex; flex-direction: column; gap: 0.35rem;
+  max-height: 260px; overflow-y: auto;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0.75rem; background: var(--white);
 }
-.service-checkboxes:focus-within {
-  border-color: var(--lavender-deep);
-  box-shadow: 0 0 0 3px rgba(155,114,207,0.12);
-}
+.service-checkboxes:focus-within { border-color: var(--lavender-deep); box-shadow: 0 0 0 3px rgba(155,114,207,0.12); }
 .checkbox-group-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--bronze-light);
-  padding: 0.4rem 0 0.2rem;
-  margin-top: 0.25rem;
-  border-top: 1px solid var(--border);
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--bronze-light); padding: 0.4rem 0 0.2rem; margin-top: 0.25rem; border-top: 1px solid var(--border);
 }
 .checkbox-group-label:first-child { border-top: none; margin-top: 0; }
-.checkbox-item { display: flex; align-items: center; gap: 0.6rem; }
+.checkbox-item { display: flex; align-items: center; }
 .checkbox-item input[type=checkbox] { display: none; }
 .checkbox-item label {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  cursor: pointer;
-  font-size: 0.88rem;
-  color: var(--text);
-  padding: 0.35rem 0.5rem;
-  border-radius: 6px;
-  width: 100%;
-  transition: background var(--ease), color var(--ease);
-  user-select: none;
+  display: flex; align-items: center; gap: 0.6rem; cursor: pointer;
+  font-size: 0.88rem; color: var(--text); padding: 0.4rem 0.5rem; border-radius: 6px;
+  width: 100%; transition: background var(--ease), color var(--ease); user-select: none;
+  min-height: 36px;
 }
 .checkbox-item label::before {
-  content: "";
-  width: 16px; height: 16px;
-  min-width: 16px;
-  border: 1.5px solid var(--border);
-  border-radius: 4px;
-  background: var(--white);
-  transition: all var(--ease);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  content: ""; width: 16px; height: 16px; min-width: 16px;
+  border: 1.5px solid var(--border); border-radius: 4px; background: var(--white);
+  transition: all var(--ease); text-align: center; line-height: 16px; font-size: 0.65rem;
 }
-.checkbox-item input[type=checkbox]:checked + label {
-  background: var(--lavender-pale);
-  color: var(--lavender-deep);
-}
-.checkbox-item input[type=checkbox]:checked + label::before {
-  background: var(--lavender-deep);
-  border-color: var(--lavender-deep);
-  content: "✓";
-  color: white;
-  font-size: 0.65rem;
-  text-align: center;
-  line-height: 16px;
-}
-.checkbox-item.coming-soon-check label {
-  color: var(--text-muted);
-  font-style: italic;
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-.selected-count {
-  font-size: 0.75rem;
-  color: var(--lavender-deep);
-  margin-top: 0.4rem;
-  min-height: 1.2em;
-}
+.checkbox-item input[type=checkbox]:checked + label { background: var(--lavender-pale); color: var(--lavender-deep); }
+.checkbox-item input[type=checkbox]:checked + label::before { background: var(--lavender-deep); border-color: var(--lavender-deep); content: "✓"; color: white; }
+.checkbox-item.coming-soon-check label { color: var(--text-muted); font-style: italic; opacity: 0.65; cursor: not-allowed; }
+.selected-count { font-size: 0.75rem; color: var(--lavender-deep); margin-top: 0.4rem; min-height: 1.2em; }
 
 /* ── ABOUT ── */
-#about{background:linear-gradient(160deg,var(--lavender-pale) 0%,var(--cream) 60%)}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:5rem}
-.about-visual{display:flex;flex-direction:column;align-items:center;gap:2rem}
-.about-logo-display{
-  width:280px;height:280px;border-radius:50%;background:var(--lavender-pale);
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;border:6px solid var(--lavender-light)
+#about { background: linear-gradient(160deg, var(--lavender-pale) 0%, var(--cream) 60%); }
+.about-grid { display: grid; grid-template-columns: 1fr 1.4fr; align-items: start; gap: 4rem; }
+.about-visual { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
+.about-cert-tag {
+  background: var(--white); border: 1px solid var(--lavender); border-radius: 30px;
+  padding: 0.6rem 1.5rem; font-size: 0.78rem; color: var(--lavender-deep);
+  text-align: center; letter-spacing: 0.05em; max-width: 280px;
 }
-.about-logo-display img{width:90%;height:90%;object-fit:contain;mix-blend-mode:normal}
-
-#highlights-strip{
-  background:var(--cream-dark);
-  padding:3.5rem 0;
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-.about-cert-tag{
-  background:var(--white);border:1px solid var(--lavender);border-radius:30px;
-  padding:0.6rem 1.5rem;font-size:0.78rem;color:var(--lavender-deep);
-  text-align:center;letter-spacing:0.05em
-}
-.about-text h2{color:var(--dark);margin-bottom:0.5rem}
-.about-name{font-family:var(--font-display);font-size:1.6rem;color:var(--bronze);font-style:italic;margin-bottom:1.5rem}
-.about-bio p{font-size:1rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.8}
-.about-highlights{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
-.highlight-item{
-  background:var(--white);border-radius:var(--radius-sm);padding:1rem 1.25rem;
-  display:flex;align-items:flex-start;gap:0.75rem;box-shadow:0 2px 12px rgba(139,74,40,0.06)
-}
-.highlight-icon{font-size:1.3rem;flex-shrink:0;margin-top:0.1rem}
-.highlight-item div{display:flex;flex-direction:column}
-.highlight-item strong{font-size:0.82rem;font-weight:600;color:var(--dark);margin-bottom:0.2rem}
-.highlight-item span{font-size:0.78rem;color:var(--text-muted)}
+.about-text h2 { color: var(--dark); margin-bottom: 0.5rem; }
+.about-name { font-family: var(--font-display); font-size: 1.6rem; color: var(--bronze); font-style: italic; margin-bottom: 1.5rem; }
+.about-bio p { font-size: 1rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.8; }
 
 /* ── BOOKING ── */
-#booking{background:var(--white);position:relative;overflow:hidden}
-#booking::before{
-  content:"";position:absolute;top:-200px;right:-200px;width:500px;height:500px;
-  border-radius:50%;background:radial-gradient(circle,rgba(197,164,232,0.15) 0%,transparent 70%);
-  pointer-events:none
+#booking { background: var(--white); position: relative; overflow: hidden; }
+#booking::before {
+  content: ""; position: absolute; top: -200px; right: -200px; width: 500px; height: 500px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(197,164,232,0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
-.booking-layout{display:grid;grid-template-columns:1fr 1.4fr;gap:5rem;align-items:start}
-.booking-info h2{color:var(--dark);margin-bottom:1rem}
-.booking-info>p{color:var(--text-muted);margin-bottom:1.5rem;line-height:1.75}
-.booking-note{
-  background:var(--lavender-pale);border-left:3px solid var(--lavender-deep);
-  border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:1rem 1.25rem;
-  font-size:0.88rem;color:var(--lavender-deep);font-style:italic;margin-bottom:2rem
+.booking-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start; }
+.booking-info h2 { color: var(--dark); margin-bottom: 1rem; }
+.booking-info > p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.75; }
+.booking-note {
+  background: var(--lavender-pale); border-left: 3px solid var(--lavender-deep);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 1rem 1.25rem;
+  font-size: 0.88rem; color: var(--lavender-deep); font-style: italic; margin-bottom: 2rem;
 }
-.booking-features{display:flex;flex-direction:column;gap:0.85rem}
-.booking-feature{display:flex;align-items:center;gap:0.75rem;font-size:0.88rem;color:var(--text-muted)}
-.booking-feature-icon{
-  width:32px;height:32px;border-radius:50%;background:var(--lavender-pale);
-  display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0
+.booking-features { display: flex; flex-direction: column; gap: 0.85rem; }
+.booking-feature { display: flex; align-items: center; gap: 0.75rem; font-size: 0.88rem; color: var(--text-muted); }
+.booking-feature-icon {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--lavender-pale);
+  display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;
 }
-.booking-form-card{
-  background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);
-  padding:2.5rem;box-shadow:var(--shadow)
+.booking-form-card {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow);
 }
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.form-group{display:flex;flex-direction:column;gap:0.45rem;margin-bottom:1.2rem}
-.form-label{font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)}
-.req{color:var(--bronze-light);margin-left:2px}
-.form-input,.form-select,.form-textarea{
-  width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  background:var(--white);font-family:var(--font-body);font-size:0.92rem;
-  color:var(--dark);transition:border-color var(--ease),box-shadow var(--ease);outline:none
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.1rem; }
+.form-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+.req { color: var(--bronze-light); margin-left: 2px; }
+.form-input,.form-select,.form-textarea {
+  width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--white); font-family: var(--font-body); font-size: 0.92rem;
+  color: var(--dark); transition: border-color var(--ease), box-shadow var(--ease); outline: none;
+  min-height: 44px;
 }
-.form-input:focus,.form-select:focus,.form-textarea:focus{
-  border-color:var(--lavender-deep);box-shadow:0 0 0 3px rgba(155,114,207,0.12)
+.form-input:focus,.form-select:focus,.form-textarea:focus {
+  border-color: var(--lavender-deep); box-shadow: 0 0 0 3px rgba(155,114,207,0.12);
 }
-.form-input::placeholder,.form-textarea::placeholder{color:#b0a099}
-.form-select{
-  appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B4A28' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;cursor:pointer
+.form-input::placeholder,.form-textarea::placeholder { color: #b0a099; }
+.form-textarea { resize: vertical; min-height: 90px; }
+.type-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
+.type-opt { flex: 1; min-width: 130px; }
+.type-opt input[type=radio] { display: none; }
+.type-opt label {
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  padding: 0.7rem 0.75rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 0.8rem; font-weight: 500; color: var(--text-muted);
+  transition: all var(--ease); text-align: center; min-height: 44px;
 }
-.form-textarea{resize:vertical;min-height:90px}
-.type-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.2rem}
-.type-opt{flex:1;min-width:120px}
-.type-opt input[type=radio]{display:none}
-.type-opt label{
-  display:flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.7rem 1rem;
-  border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;
-  font-size:0.82rem;font-weight:500;color:var(--text-muted);transition:all var(--ease);text-align:center
+.type-opt input[type=radio]:checked + label { border-color: var(--lavender-deep); background: var(--lavender-pale); color: var(--lavender-deep); }
+.type-opt label:hover { border-color: var(--lavender); }
+#submit-btn {
+  width: 100%; padding: 1rem; background: var(--bronze); color: var(--white); border-radius: 40px;
+  font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; transition: background var(--ease), transform var(--ease), box-shadow var(--ease);
+  box-shadow: 0 4px 20px rgba(139,74,40,0.25); display: flex; align-items: center; justify-content: center;
+  gap: 0.5rem; min-height: 52px;
 }
-.type-opt input[type=radio]:checked+label{border-color:var(--lavender-deep);background:var(--lavender-pale);color:var(--lavender-deep)}
-.type-opt label:hover{border-color:var(--lavender)}
-#submit-btn{
-  width:100%;padding:1rem;background:var(--bronze);color:var(--white);border-radius:40px;
-  font-family:var(--font-body);font-size:0.85rem;font-weight:600;letter-spacing:0.12em;
-  text-transform:uppercase;transition:background var(--ease),transform var(--ease),box-shadow var(--ease);
-  box-shadow:0 4px 20px rgba(139,74,40,0.25);display:flex;align-items:center;justify-content:center;gap:0.5rem
+#submit-btn:hover:not(:disabled) { background: var(--bronze-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,74,40,0.3); }
+#submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.form-success {
+  display: none; background: rgba(107,174,139,0.12); border: 1px solid rgba(107,174,139,0.4);
+  color: #3a7a58; border-radius: var(--radius-sm); padding: 1rem 1.25rem;
+  font-size: 0.9rem; margin-bottom: 1.25rem; text-align: center;
 }
-#submit-btn:hover:not(:disabled){background:var(--bronze-light);transform:translateY(-2px);box-shadow:0 8px 30px rgba(139,74,40,0.3)}
-#submit-btn:disabled{opacity:0.7;cursor:not-allowed}
-.spinner{
-  width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);
-  border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.form-success{
-  display:none;background:rgba(107,174,139,0.12);border:1px solid rgba(107,174,139,0.4);
-  color:#3a7a58;border-radius:var(--radius-sm);padding:1rem 1.25rem;
-  font-size:0.9rem;margin-bottom:1.25rem;text-align:center
-}
-.form-error{
-  display:none;background:rgba(220,80,60,0.08);border:1px solid rgba(220,80,60,0.25);
-  color:#b5352a;border-radius:var(--radius-sm);padding:1rem 1.25rem;
-  font-size:0.9rem;margin-bottom:1.25rem
+.form-error {
+  display: none; background: rgba(220,80,60,0.08); border: 1px solid rgba(220,80,60,0.25);
+  color: #b5352a; border-radius: var(--radius-sm); padding: 1rem 1.25rem;
+  font-size: 0.9rem; margin-bottom: 1.25rem;
 }
 
 /* ── FAQ ── */
-#faq{background:var(--lavender-pale)}
-.faq-header{text-align:center;margin-bottom:3.5rem}
-.faq-header h2{color:var(--dark);margin-bottom:0.75rem}
-.faq-header p{color:var(--text-muted)}
-.faq-wrap{max-width:780px;margin:0 auto}
-.faq-item{border-bottom:1px solid var(--border)}
-.faq-q{
-  width:100%;display:flex;justify-content:space-between;align-items:center;
-  padding:1.4rem 0;background:none;font-family:var(--font-display);font-size:1.15rem;
-  font-weight:400;color:var(--dark);text-align:left;transition:color var(--ease);gap:1rem
+#faq { background: var(--lavender-pale); }
+.faq-header { text-align: center; margin-bottom: 3.5rem; }
+.faq-header h2 { color: var(--dark); margin-bottom: 0.75rem; }
+.faq-header p { color: var(--text-muted); }
+.faq-wrap { max-width: 780px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 1.25rem 0; background: none; font-family: var(--font-display); font-size: 1.1rem;
+  font-weight: 400; color: var(--dark); text-align: left; transition: color var(--ease); gap: 1rem;
+  min-height: 44px;
 }
-.faq-q:hover{color:var(--bronze)}
-.faq-chevron{font-size:1.4rem;color:var(--bronze-light);transition:transform var(--ease);flex-shrink:0;line-height:1}
-.faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
-.faq-a p{padding-bottom:1.4rem;font-size:0.95rem;color:var(--text-muted);line-height:1.8}
+.faq-q:hover { color: var(--bronze); }
+.faq-chevron { font-size: 1.4rem; color: var(--bronze-light); transition: transform var(--ease); flex-shrink: 0; line-height: 1; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.faq-a p { padding-bottom: 1.25rem; font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; }
 
 /* ── FOOTER ── */
-footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
-.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
-.footer-logo{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem}
-.footer-logo img{width:48px;height:48px;object-fit:contain;mix-blend-mode:normal}
-.footer-logo span{font-family:var(--font-display);font-size:1.4rem;color:var(--lavender-light)}
-.footer-tagline{font-size:0.9rem;line-height:1.7;margin-bottom:1.5rem;max-width:260px;font-style:italic;color:rgba(255,255,255,0.5)}
-.footer-col h4{
-  font-family:var(--font-body);font-size:0.68rem;font-weight:600;
-  letter-spacing:0.2em;text-transform:uppercase;color:var(--lavender-light);margin-bottom:1.25rem
+footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 2.5rem; }
+.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+.footer-logo { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.footer-logo img { width: 48px; height: 48px; object-fit: contain; }
+.footer-logo span { font-family: var(--font-display); font-size: 1.4rem; color: var(--lavender-light); }
+.footer-tagline { font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.5rem; max-width: 260px; font-style: italic; color: rgba(255,255,255,0.5); }
+.footer-col h4 {
+  font-family: var(--font-body); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--lavender-light); margin-bottom: 1.25rem;
 }
-.footer-links{display:flex;flex-direction:column;gap:0.65rem}
-.footer-links a{font-size:0.88rem;color:rgba(255,255,255,0.55);transition:color var(--ease)}
-.footer-links a:hover{color:var(--lavender-light)}
-.footer-contact-item{display:flex;align-items:center;gap:0.6rem;font-size:0.88rem;color:rgba(255,255,255,0.55);margin-bottom:0.65rem}
-.footer-contact-icon{font-size:0.9rem;color:var(--lavender);flex-shrink:0}
-.footer-bottom{
-  border-top:1px solid rgba(255,255,255,0.08);padding-top:2rem;
-  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem
+.footer-links { display: flex; flex-direction: column; gap: 0.65rem; }
+.footer-links a { font-size: 0.88rem; color: rgba(255,255,255,0.55); transition: color var(--ease); }
+.footer-links a:hover { color: var(--lavender-light); }
+.footer-contact-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; color: rgba(255,255,255,0.55); margin-bottom: 0.65rem; }
+.footer-contact-icon { font-size: 0.9rem; color: var(--lavender); flex-shrink: 0; }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
 }
-.footer-bottom span{font-size:0.78rem;color:rgba(255,255,255,0.35)}
+.footer-bottom span { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
 
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .hero-inner{grid-template-columns:1fr;text-align:center;gap:2.5rem}
-  .hero-content{padding:2rem 0 0}
-  .hero-sub{margin:0 auto 2.5rem}
-  .hero-actions{justify-content:center}
-  .hero-img-wrap{order:-1}
-  .hero-stats{gap:2rem}
-  .about-grid{grid-template-columns:1fr}
-  .about-visual{order:-1}
-  .booking-layout{grid-template-columns:1fr;gap:3rem}
-  .footer-grid{grid-template-columns:1fr 1fr}
-  .footer-grid>div:first-child{grid-column:1/-1}
-  .about-highlights{grid-template-columns:1fr 1fr}
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — Tablet (max 900px)
+══════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  section { padding: 5rem 0; }
+  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding-top: calc(var(--nav-h) + 1rem); padding-bottom: 7rem; }
+  .hero-content { padding: 1rem 0 0; order: 2; }
+  .hero-img-wrap { order: 1; }
+  .hero-sub { margin: 0 auto 2rem; }
+  .hero-actions { justify-content: center; }
+  .hero-stats { gap: 1.5rem; }
+  .hero-img-wrap .logo-ring-1 { width: calc(clamp(220px, 45vw, 340px) + 40px); height: calc(clamp(220px, 45vw, 340px) + 40px); }
+  .hero-img-wrap .logo-ring-2 { width: calc(clamp(220px, 45vw, 340px) + 80px); height: calc(clamp(220px, 45vw, 340px) + 80px); }
+  .hero-logo-circle { width: clamp(220px, 45vw, 340px); height: clamp(220px, 45vw, 340px); }
+  .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .about-visual { order: -1; }
+  .booking-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid > div:first-child { grid-column: 1 / -1; }
 }
-@media(max-width:640px){
-  section{padding:5rem 0}
-  .hamburger{display:flex}
-  #nav-menu{
-    position:fixed;top:var(--nav-h);left:0;right:0;
-    background:rgba(250,247,242,0.98);backdrop-filter:blur(16px);
-    flex-direction:column;align-items:center;gap:0;padding:0;
-    max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s ease;
-    box-shadow:0 4px 20px rgba(139,74,40,0.08)
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — Mobile (max 640px)
+══════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  :root { --nav-h: 64px; }
+  section { padding: 4rem 0; }
+  .container { padding: 0 1.25rem; }
+
+  /* NAV */
+  .hamburger { display: flex; }
+  #nav-menu {
+    position: fixed; top: var(--nav-h); left: 0; right: 0;
+    background: rgba(250,247,242,0.98); backdrop-filter: blur(16px);
+    flex-direction: column; align-items: center; gap: 0; padding: 0;
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease;
+    box-shadow: 0 4px 20px rgba(139,74,40,0.08);
   }
-  #nav-menu.open{max-height:500px;padding:1.5rem 0}
-  #nav-menu li{width:100%;text-align:center}
-  .nav-link{display:block;padding:0.85rem 2rem}
-  .nav-cta{margin:0.5rem 2rem;display:inline-block}
-  .hero-logo-circle{width:300px;height:300px}
-  .ring-1,.ring-2{display:none}
-  .hero-stats{flex-wrap:wrap;justify-content:center;gap:1.5rem}
-  .form-row{grid-template-columns:1fr}
-  .about-highlights{grid-template-columns:1fr}
-  .footer-grid{grid-template-columns:1fr}
-  .footer-bottom{flex-direction:column;text-align:center}
+  #nav-menu.open { max-height: 500px; padding: 1.25rem 0; }
+  #nav-menu li { width: 100%; text-align: center; }
+  .nav-link { display: block; padding: 0.85rem 2rem; }
+  .nav-cta { margin: 0.5rem 2rem; display: inline-block; }
+  .nav-logo span { font-size: 1.1rem; }
+  .nav-logo img { width: 36px; height: 36px; }
+
+  /* HERO */
+  .hero-inner { padding-top: calc(var(--nav-h) + 0.5rem); padding-bottom: 6rem; }
+  .hero-logo-circle { width: 240px; height: 240px; }
+  .hero-img-wrap .logo-ring-1 { width: 290px; height: 290px; }
+  .hero-img-wrap .logo-ring-2 { width: 340px; height: 340px; }
+  .hero-stats { gap: 1.25rem; flex-wrap: wrap; justify-content: center; bottom: 1.5rem; }
+  .hero-stat strong { font-size: 1.5rem; }
+
+  /* SERVICES */
+  .services-grid { grid-template-columns: 1fr; }
+
+  /* ABOUT */
+  .about-logo-circle { width: 160px; height: 160px; }
+  .about-img-wrap .logo-ring-1 { width: 200px; height: 200px; }
+  .about-img-wrap .logo-ring-2 { width: 240px; height: 240px; }
+
+  /* BOOKING FORM */
+  .booking-form-card { padding: 1.5rem; }
+  .form-row { grid-template-columns: 1fr; }
+  .type-row { flex-direction: column; }
+  .type-opt { min-width: unset; }
+
+  /* FAQ */
+  .faq-q { font-size: 1rem; padding: 1rem 0; }
+
+  /* FOOTER */
+  .footer-grid { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — Small mobile (max 380px)
+══════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .hero-logo-circle { width: 200px; height: 200px; }
+  .hero-img-wrap .logo-ring-1 { width: 248px; height: 248px; }
+  .hero-img-wrap .logo-ring-2 { width: 290px; height: 290px; }
+  .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
+  .hero-stats { gap: 1rem; }
 }
 </style>
 <script src="logo.js"></script>
@@ -521,7 +520,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
 <nav id="navbar">
   <div class="nav-inner">
     <a href="#hero" class="nav-logo">
-      <img src="assets/logo.png" data-logo alt="Tesesthetics" id="nav-logo-img"/>
+      <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
       <span>Tesesthetics</span>
     </a>
     <ul id="nav-menu">
@@ -552,11 +551,11 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
         <a href="#services" class="btn-outline">View Services</a>
       </div>
     </div>
-    <div class="hero-img-wrap">
-      <div class="hero-logo-ring ring-2"></div>
-      <div class="hero-logo-ring ring-1"></div>
+    <div class="logo-img-wrap hero-img-wrap">
+      <div class="logo-ring logo-ring-2"></div>
+      <div class="logo-ring logo-ring-1"></div>
       <div class="hero-logo-circle">
-        <img src="assets/logo.png" data-logo alt="Tesesthetics" id="hero-logo-img"/>
+        <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
       </div>
     </div>
   </div>
@@ -575,7 +574,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
     <div class="services-header slide-up">
       <p class="section-label">What We Offer</p>
       <h2>Services &amp; Treatments</h2>
-      <p>Every service is customized to your unique skin. Prices may vary &mdash; reach out with any questions!</p>
+      <p>Every service is customized to your skin. All pricing shown is a range &mdash; your exact quote is confirmed at booking.</p>
     </div>
     <div id="services-container"></div>
   </div>
@@ -588,8 +587,12 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
   <div class="container">
     <div class="about-grid">
       <div class="about-visual slide-left">
-        <div class="about-logo-display">
-          <img src="assets/logo.png" data-logo alt="Tesesthetics" id="about-logo-img"/>
+        <div class="logo-img-wrap about-img-wrap">
+          <div class="logo-ring logo-ring-2"></div>
+          <div class="logo-ring logo-ring-1"></div>
+          <div class="about-logo-circle">
+            <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
+          </div>
         </div>
         <div class="about-cert-tag">Licensed Esthetician &mdash; School of Skin &amp; Nail Care, Sandy Springs GA</div>
       </div>
@@ -604,15 +607,6 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
 </section>
 
 <!-- ═══════════════════════════════════════════
-     ABOUT HIGHLIGHTS STRIP
-═══════════════════════════════════════════ -->
-<div id="highlights-strip">
-  <div class="container">
-    <div class="about-highlights" id="about-highlights"></div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════
      BOOKING
 ═══════════════════════════════════════════ -->
 <section id="booking">
@@ -622,12 +616,12 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
         <p class="section-label">Get Started</p>
         <h2>Book or Express Interest</h2>
         <p>Fill out the form and I&#39;ll reach out within 24&ndash;48 hours to confirm your appointment or answer any questions.</p>
-        <div class="booking-note">Not sure what service you need? Just pick &ldquo;Not Sure Yet&rdquo; and we&rsquo;ll chat about what&rsquo;s best for your skin!</div>
+        <div class="booking-note">Not sure what service you need? Pick &ldquo;Not Sure Yet&rdquo; and we&rsquo;ll figure it out together.</div>
         <div class="booking-features">
-          <div class="booking-feature"><span class="booking-feature-icon">📋</span>Quick consultation included with every new client</div>
+          <div class="booking-feature"><span class="booking-feature-icon">📋</span>Full skin consultation with every new client</div>
           <div class="booking-feature"><span class="booking-feature-icon">🌿</span>All treatments customized for your skin type</div>
-          <div class="booking-feature"><span class="booking-feature-icon">📍</span>Located in Buford, GA &mdash; details sent after booking</div>
-          <div class="booking-feature"><span class="booking-feature-icon">💜</span>New clients always welcome!</div>
+          <div class="booking-feature"><span class="booking-feature-icon">📍</span>Buford, GA &mdash; location details sent after booking</div>
+          <div class="booking-feature"><span class="booking-feature-icon">💜</span>New clients always welcome</div>
         </div>
       </div>
       <div class="booking-form-card slide-right">
@@ -660,9 +654,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
           </div>
           <div class="form-group">
             <label class="form-label">Services Interested In <span class="req">*</span></label>
-            <div class="service-checkboxes" id="service-checkboxes">
-              <!-- Populated by JavaScript -->
-            </div>
+            <div class="service-checkboxes" id="service-checkboxes"></div>
           </div>
           <div class="form-group">
             <label class="form-label">I&#39;m Looking to&hellip;</label>
@@ -674,7 +666,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
           </div>
           <div class="form-group">
             <label class="form-label" for="notes">Notes / Questions</label>
-            <textarea id="notes" class="form-textarea" placeholder="Any skin concerns, allergies, preferred dates/times&hellip;"></textarea>
+            <textarea id="notes" class="form-textarea" placeholder="Skin concerns, allergies, preferred dates/times&hellip;"></textarea>
           </div>
           <button type="submit" id="submit-btn">Send Booking Request</button>
         </form>
@@ -705,7 +697,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
     <div class="footer-grid">
       <div>
         <div class="footer-logo">
-          <img src="assets/logo.png" data-logo alt="Tesesthetics" id="footer-logo-img"/>
+          <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
           <span>Tesesthetics</span>
         </div>
         <p class="footer-tagline">Skin that glows from intention, not accident.</p>
@@ -737,78 +729,81 @@ footer{background:var(--dark);color:rgba(255,255,255,0.7);padding:4rem 0 2.5rem}
 // =====================================================
 //  TESESTHETICS — ALL JAVASCRIPT
 //
-//  EASY EDIT SECTIONS (clearly labeled below):
+//  ✏️ EASY EDIT SECTIONS:
 //  1. SERVICES DATA  — add/change/remove services
-//  2. ABOUT & FAQ    — bio text, FAQ questions
+//  2. ABOUT & FAQ    — bio paragraphs, FAQ Q&A
 //  3. GOOGLE SHEETS  — paste your endpoint URL here
 // =====================================================
 
 
 // ╔═════════════════════════════════════════════════╗
 // ║  1. SERVICES DATA                               ║
-// ║  Set available:false + comingSoon:true for      ║
-// ║  services not yet offered                       ║
+// ║  available: true  = live, bookable              ║
+// ║  comingSoon: true = grayed out, not bookable    ║
 // ╚═════════════════════════════════════════════════╝
 const SERVICES = [
+  // ── FACIALS ─────────────────────────────────────
   {
-    id:"classic-facial",name:"Classic Facial",category:"Facials",
-    duration:"60 min",price:"$75",icon:"✦",available:true,comingSoon:false,
-    description:"A thorough, results-driven facial tailored to your skin type. Deep cleansing, steam, extractions, mask, and customized moisturizer.",
-    bullets:["Double cleanse & skin analysis","Steam & gentle extractions","Custom mask treatment","Facial massage & moisturizer","SPF finishing touch"]
+    id:"signature-facial", name:"Custom / Signature Facial", category:"Facials",
+    duration:"60 min", price:"$95 – $115", icon:"✦", available:true, comingSoon:false,
+    description:"A fully personalized facial built around your skin's unique needs. Deep cleansing, steam, extractions, mask, and targeted serums — no two treatments are the same.",
+    bullets:["Full skin analysis & consultation","Steam & gentle extractions","Custom mask & serum treatment","Facial massage & moisturizer","SPF finishing touch"]
   },
   {
-    id:"express-facial",name:"Express Glow Facial",category:"Facials",
-    duration:"30 min",price:"$45",icon:"✦",available:true,comingSoon:false,
-    description:"A quick but effective skin refresh — perfect for a lunch break or before a big event.",
-    bullets:["Cleanse & tone","Targeted serum application","Moisturize & protect","Ideal for maintenance visits"]
+    id:"express-facial", name:"Express Facial", category:"Facials",
+    duration:"30 min", price:"$65 – $80", icon:"✦", available:true, comingSoon:false,
+    description:"A focused skin refresh for when you're short on time but still want results. Cleanse, treat, protect.",
+    bullets:["Cleanse & tone","Targeted serum application","Moisturize & protect","Perfect before an event or as maintenance"]
   },
   {
-    id:"hydrating-facial",name:"Hydration Infusion Facial",category:"Facials",
-    duration:"60 min",price:"$85",icon:"✦",available:true,comingSoon:false,
-    description:"Deeply replenishing treatment for dry, dehydrated, or sensitive skin. Loaded with hyaluronic acid serums and calming botanicals.",
-    bullets:["Gentle enzyme exfoliation","Hyaluronic acid infusion","Barrier-repair mask","Rosehip & bakuchiol serum","Great for sensitive skin"]
+    id:"dermaplane-facial", name:"Dermaplane Facial", category:"Facials",
+    duration:"50 – 60 min", price:"$110 – $130", icon:"✦", available:true, comingSoon:false,
+    description:"A brightening treatment that gently removes dead skin cells and peach fuzz for a visibly smoother, glowing complexion. Also available as an add-on to any facial.",
+    bullets:["Manual exfoliation with sterile surgical blade","Removes vellus hair (peach fuzz)","Instantly smoother, brighter skin","Enhances serum & moisturizer absorption","Add-on to existing facial: +$25 – $40"]
   },
   {
-    id:"back-facial",name:"Back Facial",category:"Facials",
-    duration:"45 min",price:"$65",icon:"✦",available:true,comingSoon:false,
-    description:"All the benefits of a classic facial applied to your back — ideal for body acne or an upcoming special event.",
-    bullets:["Deep cleanse & exfoliation","Steam & extractions","Clarifying or hydrating mask","Moisturizer & spot treatment"]
+    id:"chemical-peel", name:"Light Chemical Peel", category:"Facials",
+    duration:"45 – 60 min", price:"$85 – $120", icon:"✦", available:false, comingSoon:true,
+    description:"A beginner-friendly peel targeting dullness, uneven texture, and mild discoloration. Pricing varies by peel type and expected downtime.",
+    bullets:["Lactic, glycolic, or mandelic options","Minimal to no downtime","Ideal for first-time peel clients","Post-peel care protocol included"]
+  },
+  // ── WAXING ──────────────────────────────────────
+  {
+    id:"brow-wax", name:"Brow Shaping", category:"Waxing",
+    duration:"15 min", price:"$15 – $25", icon:"◆", available:true, comingSoon:false,
+    description:"Clean, defined brows shaped to your natural arch and personal preference.",
+    bullets:["Consultation for desired shape","Hard or soft wax","Precise clean-up tweezing","Soothing post-wax oil"]
   },
   {
-    id:"brow-wax",name:"Brow Shaping",category:"Waxing",
-    duration:"15 min",price:"$18",icon:"◆",available:true,comingSoon:false,
-    description:"Precise brow waxing and shaping to frame your face and enhance your natural features.",
-    bullets:["Consultation for desired shape","Hard or soft wax","Clean-up tweezing","Soothing post-wax oil"]
+    id:"lip-wax", name:"Lip Wax", category:"Waxing",
+    duration:"10 min", price:"$10 – $20", icon:"◆", available:true, comingSoon:false,
+    description:"Quick, smooth upper lip waxing with minimal irritation.",
+    bullets:["Gentle hard wax formula","Fast & comfortable","Calming post-wax serum"]
   },
   {
-    id:"lip-chin-wax",name:"Lip & Chin Wax",category:"Waxing",
-    duration:"15 min",price:"$20",icon:"◆",available:true,comingSoon:false,
-    description:"Smooth, clean results for upper lip and chin in a quick, comfortable session.",
-    bullets:["Gentle hard wax formula","Upper lip and/or chin","Calming post-wax treatment"]
+    id:"chin-wax", name:"Chin Wax", category:"Waxing",
+    duration:"10 min", price:"$12 – $20", icon:"◆", available:true, comingSoon:false,
+    description:"Precise chin waxing using hard wax suited for sensitive skin.",
+    bullets:["Hard wax formula","Quick & precise","Soothing finish"]
   },
   {
-    id:"face-wax",name:"Full Face Wax",category:"Waxing",
-    duration:"30 min",price:"$45",icon:"◆",available:true,comingSoon:false,
-    description:"Complete facial hair removal covering brows, upper lip, chin, sides of face, and forehead.",
+    id:"face-wax", name:"Full Face Wax", category:"Waxing",
+    duration:"30 min", price:"$45 – $75", icon:"◆", available:true, comingSoon:false,
+    description:"Complete facial hair removal — brows, lip, chin, sides of face, and forehead.",
     bullets:["Brows, lip, chin & sides","Hard wax for sensitive areas","Soothing finish serum"]
   },
+  // ── ADVANCED (COMING SOON) ──────────────────────
   {
-    id:"chemical-peel",name:"Chemical Peel",category:"Advanced Treatments",
-    duration:"45 min",price:"TBD",icon:"◈",available:false,comingSoon:true,
-    description:"Targeted exfoliation to address hyperpigmentation, fine lines, acne scarring, and uneven texture.",
-    bullets:["Superficial to medium-depth options","Lactic, glycolic, or salicylic","Post-peel care included"]
-  },
-  {
-    id:"led-therapy",name:"LED Light Therapy",category:"Advanced Treatments",
-    duration:"20 min add-on",price:"$30 add-on",icon:"◈",available:false,comingSoon:true,
+    id:"led-therapy", name:"LED Light Therapy", category:"Advanced Treatments",
+    duration:"20 min add-on", price:"$30 add-on", icon:"◈", available:false, comingSoon:true,
     description:"Red and blue LED wavelengths target acne-causing bacteria, stimulate collagen, and calm inflammation.",
-    bullets:["Red light: anti-aging & glow","Blue light: acne & bacteria","Can be added to any facial"]
+    bullets:["Red light: anti-aging & radiance","Blue light: acne & bacteria","Add-on to any facial"]
   },
   {
-    id:"lash-tint",name:"Lash & Brow Tinting",category:"Advanced Treatments",
-    duration:"30 min",price:"TBD",icon:"◈",available:false,comingSoon:true,
-    description:"Semi-permanent tint to darken and define lashes and brows without daily mascara.",
-    bullets:["Patch test required 24 hrs prior","Multiple shades available","Lasts 4–6 weeks"]
+    id:"lash-tint", name:"Lash & Brow Tinting", category:"Advanced Treatments",
+    duration:"30 min", price:"TBD", icon:"◈", available:false, comingSoon:true,
+    description:"Semi-permanent tint to define lashes and brows without daily mascara.",
+    bullets:["Patch test required 24 hrs prior","Multiple shades available","Lasts 4 – 6 weeks"]
   }
 ];
 const CATEGORIES = ["Facials","Waxing","Advanced Treatments"];
@@ -816,44 +811,57 @@ const CATEGORIES = ["Facials","Waxing","Advanced Treatments"];
 
 // ╔═════════════════════════════════════════════════╗
 // ║  2. ABOUT & FAQ CONTENT                         ║
+// ║  Each string in BIO = one paragraph.            ║
+// ║  Use \' for apostrophes inside strings.         ║
 // ╚═════════════════════════════════════════════════╝
 const BIO = [
-  "Hi, I'm Veronica — a licensed esthetician based in Buford, GA, originally from the beautiful city of Guadalajara, Mexico. Growing up, I was surrounded by a culture that celebrates taking care of yourself with intention and pride, and that spirit has shaped everything I do today.",
-  "Before esthetics, I built my career in dentistry — training as a dentist in Mexico and working as a dental assistant here in Georgia. That background gave me a deep understanding of facial anatomy, precision, and the kind of trust a client places in someone who works up close. I bring all of that into every treatment I perform. When I'm working on your skin, I'm not guessing — I understand what's beneath it.",
-  "Making the transition into esthetics felt natural. The attention to detail, the care for the person in front of you, the commitment to real results — it's the same philosophy, just a different canvas. I'm just getting started here in Buford, and I'd be honored to have you as one of my first clients. Come as you are. Leave glowing."
+  "Hi, I\'m Veronica — a licensed esthetician based in Buford, GA, originally from the beautiful city of Guadalajara, Mexico. Growing up, I was surrounded by a culture that celebrates taking care of yourself with intention and pride, and that spirit shapes everything I do.",
+  "Before esthetics, I built my career in dentistry — training as a dentist in Mexico and working as a dental assistant here in Georgia. That background gave me a deep understanding of facial anatomy, precision, and the kind of trust a client places in someone who works up close. When I\'m working on your skin, I\'m not guessing — I understand what\'s beneath it.",
+  "Making the transition into esthetics felt completely natural. The attention to detail, the care for the person in front of you, the commitment to real results — it\'s the same philosophy, just a different canvas. I\'m just getting started here in Buford and would be honored to have you as one of my first clients. Come as you are. Leave glowing."
 ];
-const HIGHLIGHTS = [
-  {icon:"🦷", label:"Clinical Precision",    detail:"Dental training in facial anatomy & technique"},
-  {icon:"🌎", label:"From Guadalajara, MX",  detail:"Bringing warmth, culture & dedication"},
-  {icon:"📍", label:"Buford, GA",            detail:"Serving Buford, Sugar Hill, Suwanee & beyond"},
-  {icon:"🎓", label:"Licensed Esthetician",  detail:"School of Skin & Nail Care, Sandy Springs GA"}
-];
+
 const FAQS = [
-  {q:"Do I need to do anything to prepare for my facial?",
-   a:"Come with a clean face if possible, but don't stress if you can't — we'll take care of it! Avoid retinol or acids for 24–48 hours before your appointment. Let me know about any allergies or medications during booking."},
-  {q:"How often should I get a facial?",
-   a:"For most skin types, every 4–6 weeks is ideal. This lines up with your skin's natural cell turnover cycle. That said, we'll create a plan that works for your skin and your schedule."},
-  {q:"Is waxing okay for sensitive skin?",
-   a:"Yes! I use hard wax on sensitive areas which is gentler and adheres to hair rather than skin. Let me know your skin type when booking and I'll plan accordingly."},
-  {q:"What areas do you serve?",
-   a:"I'm based in Buford, GA and primarily serve the Buford, Sugar Hill, Suwanee, Cumming, and surrounding Gwinnett/Forsyth County areas."},
-  {q:"I've never had a facial before — what should I expect?",
-   a:"Welcome! Your first facial is a relaxing, educational experience. We'll start with a skin consultation, then you'll lay back and enjoy cleansing, steam, extractions if needed, a mask, and moisturizing. Most clients leave glowing and wondering why they waited so long."},
-  {q:"What's your cancellation policy?",
-   a:"Life happens! I just ask for at least 24 hours notice if you need to reschedule. I'll always be upfront and fair about it."}
+  {
+    q: "Do I need to do anything to prepare for my facial?",
+    a: "Come with a clean face if possible, but don\'t stress if you can\'t — we\'ll handle it. Avoid retinol or exfoliating acids for 24–48 hours before your appointment, and let me know about any allergies or medications when you book."
+  },
+  {
+    q: "How often should I get a facial?",
+    a: "For most skin types, every 4–6 weeks is the sweet spot — it lines up with your skin\'s natural cell turnover cycle. That said, we\'ll put together a plan that actually fits your schedule and goals."
+  },
+  {
+    q: "Is waxing okay for sensitive skin?",
+    a: "Yes! I use hard wax on sensitive areas, which adheres to the hair rather than the skin and is much gentler. Just let me know your skin type when booking and I\'ll adjust accordingly."
+  },
+  {
+    q: "What is dermaplaning and is it safe?",
+    a: "Dermaplaning is a manual exfoliation technique using a sterile surgical blade to gently remove dead skin cells and fine vellus hair (peach fuzz). It\'s safe for most skin types and leaves your skin noticeably smoother and brighter. It does not make hair grow back thicker — that\'s a myth!"
+  },
+  {
+    q: "I\'ve never had a facial before — what should I expect?",
+    a: "Welcome! We start with a quick skin consultation, then you relax while I take care of everything — cleansing, steam, extractions if needed, a mask, and moisturizing. Most first-timers leave wondering why they waited so long."
+  },
+  {
+    q: "What areas do you serve?",
+    a: "I\'m based in Buford, GA and serve the Buford, Sugar Hill, Suwanee, Cumming, and surrounding Gwinnett and Forsyth County areas."
+  },
+  {
+    q: "What\'s your cancellation policy?",
+    a: "Life happens — I just ask for at least 24 hours notice if you need to reschedule. I\'ll always be upfront and fair about it."
+  }
 ];
 
 
 // ╔═════════════════════════════════════════════════╗
 // ║  3. GOOGLE SHEETS ENDPOINT                      ║
-// ║  Paste your Apps Script Web App URL below.      ║
-// ║  See README.md for full setup instructions.     ║
+// ║  Replace the string below with your Apps        ║
+// ║  Script Web App URL. See README for setup.      ║
 // ╚═════════════════════════════════════════════════╝
 const SHEETS_ENDPOINT = "YOUR_APPS_SCRIPT_URL_HERE";
 
 
 // ─────────────────────────────────────────────────
-//  RENDER FUNCTIONS (no need to edit below here)
+//  RENDER & LOGIC — no need to edit below this line
 // ─────────────────────────────────────────────────
 
 function renderServices() {
@@ -882,60 +890,53 @@ function renderServices() {
           <span class="card-price">${s.price}</span>
         </div>
         <p class="card-description">${s.description}</p>
-        <ul class="card-bullets">${s.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
+        <ul class="card-bullets">${s.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
         ${!s.comingSoon
           ? `<button class="card-book-btn" onclick="scrollToBooking('${s.id}')">Book This →</button>`
-          : `<span class="card-notify">Get notified when available</span>`}
+          : `<span class="card-notify">Notify me when available</span>`}
       `;
       grid.appendChild(card);
     });
     sec.appendChild(grid);
     container.appendChild(sec);
   });
-  // populate checkboxes
+
+  // Populate service checkboxes in booking form
   const checkboxContainer = document.getElementById("service-checkboxes");
   CATEGORIES.forEach(cat => {
     const groupLabel = document.createElement("div");
     groupLabel.className = "checkbox-group-label";
     groupLabel.textContent = cat;
     checkboxContainer.appendChild(groupLabel);
-    SERVICES.filter(s=>s.category===cat).forEach(s=>{
+    SERVICES.filter(s => s.category === cat).forEach(s => {
       const item = document.createElement("div");
       item.className = "checkbox-item" + (s.comingSoon ? " coming-soon-check" : "");
       const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.id = "cb-" + s.id;
-      cb.value = s.id;
-      cb.name = "services";
+      cb.type = "checkbox"; cb.id = "cb-" + s.id; cb.value = s.id; cb.name = "services";
       if (s.comingSoon) cb.disabled = true;
       cb.addEventListener("change", updateSelectedCount);
       const lbl = document.createElement("label");
       lbl.htmlFor = "cb-" + s.id;
       lbl.textContent = s.name + (s.comingSoon ? " (Coming Soon)" : "");
-      item.appendChild(cb);
-      item.appendChild(lbl);
+      item.appendChild(cb); item.appendChild(lbl);
       checkboxContainer.appendChild(item);
     });
   });
-  // Not sure option
+
+  // Not sure yet option
   const notSureItem = document.createElement("div");
   notSureItem.className = "checkbox-item";
   const notSureCb = document.createElement("input");
-  notSureCb.type = "checkbox";
-  notSureCb.id = "cb-not-sure";
-  notSureCb.value = "not-sure";
-  notSureCb.name = "services";
+  notSureCb.type = "checkbox"; notSureCb.id = "cb-not-sure"; notSureCb.value = "not-sure"; notSureCb.name = "services";
   notSureCb.addEventListener("change", updateSelectedCount);
   const notSureLbl = document.createElement("label");
   notSureLbl.htmlFor = "cb-not-sure";
-  notSureLbl.textContent = "Not Sure Yet — Let's Chat!";
-  notSureItem.appendChild(notSureCb);
-  notSureItem.appendChild(notSureLbl);
+  notSureLbl.textContent = "Not Sure Yet — Let\'s Chat!";
+  notSureItem.appendChild(notSureCb); notSureItem.appendChild(notSureLbl);
   checkboxContainer.appendChild(notSureItem);
-  // Add count display
+
   const countEl = document.createElement("div");
-  countEl.className = "selected-count";
-  countEl.id = "selected-count";
+  countEl.className = "selected-count"; countEl.id = "selected-count";
   checkboxContainer.parentElement.appendChild(countEl);
 }
 
@@ -948,23 +949,17 @@ function updateSelectedCount() {
     const s = SERVICES.find(s => s.id === cb.value);
     return s ? s.name : "Not Sure Yet";
   });
-  el.textContent = checked.length === 1 ? `✓ ${names[0]} selected` : `✓ ${checked.length} services selected: ${names.join(", ")}`;
+  el.textContent = checked.length === 1
+    ? `✓ ${names[0]} selected`
+    : `✓ ${checked.length} services selected: ${names.join(", ")}`;
 }
 
 function renderAbout() {
-  const bioEl = document.getElementById("about-bio");
-  bioEl.innerHTML = BIO.map(p=>`<p>${p}</p>`).join("");
-  const hlEl = document.getElementById("about-highlights");
-  hlEl.innerHTML = HIGHLIGHTS.map(h=>`
-    <div class="highlight-item">
-      <span class="highlight-icon">${h.icon}</span>
-      <div><strong>${h.label}</strong><span>${h.detail}</span></div>
-    </div>`).join("");
+  document.getElementById("about-bio").innerHTML = BIO.map(p => `<p>${p}</p>`).join("");
 }
 
 function renderFAQ() {
-  const container = document.getElementById("faq-container");
-  container.innerHTML = FAQS.map((item,i)=>`
+  document.getElementById("faq-container").innerHTML = FAQS.map((item, i) => `
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFAQ(this)">
         <span>${item.q}</span><span class="faq-chevron">›</span>
@@ -982,9 +977,8 @@ function toggleFAQ(btn) {
   const answer = btn.nextElementSibling;
   const chevron = btn.querySelector(".faq-chevron");
   const isOpen = answer.style.maxHeight && answer.style.maxHeight !== "0px";
-  // close all
-  document.querySelectorAll(".faq-a").forEach(a=>{a.style.maxHeight="0px"});
-  document.querySelectorAll(".faq-chevron").forEach(c=>{c.style.transform=""});
+  document.querySelectorAll(".faq-a").forEach(a => { a.style.maxHeight = "0px"; });
+  document.querySelectorAll(".faq-chevron").forEach(c => { c.style.transform = ""; });
   if (!isOpen) {
     answer.style.maxHeight = answer.scrollHeight + "px";
     chevron.style.transform = "rotate(90deg)";
@@ -994,8 +988,8 @@ function toggleFAQ(btn) {
 function scrollToBooking(serviceId) {
   const sec = document.getElementById("booking");
   const navH = document.getElementById("navbar").offsetHeight;
-  window.scrollTo({top: sec.getBoundingClientRect().top + window.scrollY - navH, behavior:"smooth"});
-  setTimeout(()=>{
+  window.scrollTo({ top: sec.getBoundingClientRect().top + window.scrollY - navH, behavior: "smooth" });
+  setTimeout(() => {
     const cb = document.getElementById("cb-" + serviceId);
     if (cb && !cb.disabled) {
       cb.checked = true;
@@ -1003,69 +997,63 @@ function scrollToBooking(serviceId) {
       const box = document.getElementById("service-checkboxes");
       box.style.transition = "box-shadow 0.3s";
       box.style.boxShadow = "0 0 0 4px rgba(155,114,207,0.3)";
-      setTimeout(()=>{ box.style.boxShadow = ""; }, 1500);
+      setTimeout(() => { box.style.boxShadow = ""; }, 1500);
     }
   }, 600);
 }
 
-// NAV
 function initNav() {
   const hamburger = document.getElementById("hamburger");
   const menu = document.getElementById("nav-menu");
   const navbar = document.getElementById("navbar");
-  hamburger.addEventListener("click", ()=>{
+  hamburger.addEventListener("click", () => {
     hamburger.classList.toggle("open");
     menu.classList.toggle("open");
   });
-  menu.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
+  menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
     hamburger.classList.remove("open");
     menu.classList.remove("open");
   }));
-  window.addEventListener("scroll", ()=>{
+  window.addEventListener("scroll", () => {
     navbar.classList.toggle("scrolled", window.scrollY > 60);
-    // active link
     let current = "";
-    document.querySelectorAll("section[id]").forEach(s=>{
+    document.querySelectorAll("section[id]").forEach(s => {
       if (window.scrollY >= s.offsetTop - 120) current = s.id;
     });
-    document.querySelectorAll(".nav-link").forEach(l=>{
-      l.classList.toggle("active", l.getAttribute("href")==="#"+current);
+    document.querySelectorAll(".nav-link").forEach(l => {
+      l.classList.toggle("active", l.getAttribute("href") === "#" + current);
     });
   });
 }
 
-// SMOOTH SCROLL
 function initSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(a=>{
-    a.addEventListener("click", e=>{
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener("click", e => {
       e.preventDefault();
       const target = document.querySelector(a.getAttribute("href"));
       if (!target) return;
       const navH = document.getElementById("navbar").offsetHeight;
-      window.scrollTo({top: target.getBoundingClientRect().top + window.scrollY - navH, behavior:"smooth"});
+      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navH, behavior: "smooth" });
     });
   });
 }
 
-// SCROLL ANIMATIONS
 function initAnimations() {
-  const obs = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("visible"); obs.unobserve(e.target); }});
-  },{threshold:0.1,rootMargin:"0px 0px -50px 0px"});
-  document.querySelectorAll(".fade-in,.slide-up,.slide-left,.slide-right").forEach(el=>obs.observe(el));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+  document.querySelectorAll(".fade-in,.slide-up,.slide-left,.slide-right").forEach(el => obs.observe(el));
 }
 
-// PHONE FORMAT
 function initPhone() {
-  document.getElementById("phone").addEventListener("input", e=>{
-    let v = e.target.value.replace(/\D/g,"");
-    if (v.length>=6) v=`(${v.slice(0,3)}) ${v.slice(3,6)}-${v.slice(6,10)}`;
-    else if (v.length>=3) v=`(${v.slice(0,3)}) ${v.slice(3)}`;
+  document.getElementById("phone").addEventListener("input", e => {
+    let v = e.target.value.replace(/\D/g, "");
+    if (v.length >= 6) v = `(${v.slice(0,3)}) ${v.slice(3,6)}-${v.slice(6,10)}`;
+    else if (v.length >= 3) v = `(${v.slice(0,3)}) ${v.slice(3)}`;
     e.target.value = v;
   });
 }
 
-// BOOKING FORM
 async function handleSubmit(e) {
   e.preventDefault();
   const btn = document.getElementById("submit-btn");
@@ -1079,6 +1067,7 @@ async function handleSubmit(e) {
   const phone     = document.getElementById("phone").value.trim();
   const email     = document.getElementById("email").value.trim();
   const address   = document.getElementById("address").value.trim();
+
   const checkedBoxes = document.querySelectorAll('input[name="services"]:checked');
   if (checkedBoxes.length === 0) {
     errorEl.textContent = "Please select at least one service.";
@@ -1088,10 +1077,11 @@ async function handleSubmit(e) {
     const s = SERVICES.find(s => s.id === cb.value);
     return s ? s.name : "Not Sure Yet";
   }).join(", ");
-  const type      = document.querySelector('input[name="btype"]:checked')?.value || "Info Request";
-  const notes     = document.getElementById("notes").value.trim();
 
-  if (!firstName||!lastName||!phone||!email) {
+  const type  = document.querySelector('input[name="btype"]:checked')?.value || "Info Request";
+  const notes = document.getElementById("notes").value.trim();
+
+  if (!firstName || !lastName || !phone || !email) {
     errorEl.textContent = "Please fill in all required fields.";
     errorEl.style.display = "block"; return;
   }
@@ -1101,24 +1091,28 @@ async function handleSubmit(e) {
   }
 
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Sending…';
+  btn.innerHTML = '<span class="spinner"></span> Sending\u2026';
 
   const payload = {
-    timestamp: new Date().toLocaleString("en-US",{timeZone:"America/New_York"}),
-    firstName, lastName, phone, email, address, service, type, notes, status:"New"
+    timestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }),
+    firstName, lastName, phone, email, address, service, type, notes, status: "New"
   };
 
   if (SHEETS_ENDPOINT === "YOUR_APPS_SCRIPT_URL_HERE") {
-    await new Promise(r=>setTimeout(r,1200));
+    await new Promise(r => setTimeout(r, 1200));
     showSuccess(successEl, btn);
     console.log("Demo mode — data:", payload);
     return;
   }
 
   try {
-    await fetch(SHEETS_ENDPOINT, {method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    await fetch(SHEETS_ENDPOINT, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
     showSuccess(successEl, btn);
-  } catch(err) {
+  } catch (err) {
     btn.disabled = false;
     btn.innerHTML = "Send Booking Request";
     errorEl.textContent = "Something went wrong. Please try again.";
@@ -1127,11 +1121,11 @@ async function handleSubmit(e) {
 }
 
 function showSuccess(el, btn) {
-  el.textContent = "You're all set! 🌸 I'll be in touch within 24–48 hours. Can't wait to meet you!";
+  el.textContent = "You\'re all set! 🌸 I\'ll be in touch within 24–48 hours. Can\'t wait to meet you!";
   el.style.display = "block";
   btn.innerHTML = "✓ Request Sent!";
   btn.style.background = "var(--success)";
-  setTimeout(()=>{
+  setTimeout(() => {
     document.getElementById("booking-form").reset();
     btn.disabled = false;
     btn.innerHTML = "Send Booking Request";
@@ -1140,8 +1134,7 @@ function showSuccess(el, btn) {
   }, 6000);
 }
 
-// INIT
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
   renderServices();
   renderAbout();
   renderFAQ();
