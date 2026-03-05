@@ -903,7 +903,7 @@ function renderServices() {
         <p class="card-description">${s.description}</p>
         <ul class="card-bullets">${s.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
         ${!s.comingSoon
-          ? `<button class="card-book-btn" onclick="scrollToBooking('${s.id}')">Book This →</button>`
+          ? `<a class="card-book-btn" href="https://chaircare.netlify.app/booking/?b=test-studio" target="_blank" rel="noopener">Book This →</a>`
           : `<span class="card-notify">Notify me when available</span>`}
       `;
       grid.appendChild(card);
@@ -911,59 +911,10 @@ function renderServices() {
     sec.appendChild(grid);
     container.appendChild(sec);
   });
-
-  // Populate service checkboxes in booking form
-  const checkboxContainer = document.getElementById("service-checkboxes");
-  CATEGORIES.forEach(cat => {
-    const groupLabel = document.createElement("div");
-    groupLabel.className = "checkbox-group-label";
-    groupLabel.textContent = cat;
-    checkboxContainer.appendChild(groupLabel);
-    SERVICES.filter(s => s.category === cat).forEach(s => {
-      const item = document.createElement("div");
-      item.className = "checkbox-item" + (s.comingSoon ? " coming-soon-check" : "");
-      const cb = document.createElement("input");
-      cb.type = "checkbox"; cb.id = "cb-" + s.id; cb.value = s.id; cb.name = "services";
-      if (s.comingSoon) cb.disabled = true;
-      cb.addEventListener("change", updateSelectedCount);
-      const lbl = document.createElement("label");
-      lbl.htmlFor = "cb-" + s.id;
-      lbl.textContent = s.name + (s.comingSoon ? " (Coming Soon)" : "");
-      item.appendChild(cb); item.appendChild(lbl);
-      checkboxContainer.appendChild(item);
-    });
-  });
-
-  // Not sure yet option
-  const notSureItem = document.createElement("div");
-  notSureItem.className = "checkbox-item";
-  const notSureCb = document.createElement("input");
-  notSureCb.type = "checkbox"; notSureCb.id = "cb-not-sure"; notSureCb.value = "not-sure"; notSureCb.name = "services";
-  notSureCb.addEventListener("change", updateSelectedCount);
-  const notSureLbl = document.createElement("label");
-  notSureLbl.htmlFor = "cb-not-sure";
-  notSureLbl.textContent = "Not Sure Yet — Let\'s Chat!";
-  notSureItem.appendChild(notSureCb); notSureItem.appendChild(notSureLbl);
-  checkboxContainer.appendChild(notSureItem);
-
-  const countEl = document.createElement("div");
-  countEl.className = "selected-count"; countEl.id = "selected-count";
-  checkboxContainer.parentElement.appendChild(countEl);
 }
 
-function updateSelectedCount() {
-  const checked = document.querySelectorAll('input[name="services"]:checked');
-  const el = document.getElementById("selected-count");
-  if (!el) return;
-  if (checked.length === 0) { el.textContent = ""; return; }
-  const names = Array.from(checked).map(cb => {
-    const s = SERVICES.find(s => s.id === cb.value);
-    return s ? s.name : "Not Sure Yet";
-  });
-  el.textContent = checked.length === 1
-    ? `✓ ${names[0]} selected`
-    : `✓ ${checked.length} services selected: ${names.join(", ")}`;
-}
+
+
 
 function renderAbout() {
   document.getElementById("about-bio").innerHTML = BIO.map(p => `<p>${p}</p>`).join("");
@@ -996,22 +947,8 @@ function toggleFAQ(btn) {
   }
 }
 
-function scrollToBooking(serviceId) {
-  const sec = document.getElementById("booking");
-  const navH = document.getElementById("navbar").offsetHeight;
-  window.scrollTo({ top: sec.getBoundingClientRect().top + window.scrollY - navH, behavior: "smooth" });
-  setTimeout(() => {
-    const cb = document.getElementById("cb-" + serviceId);
-    if (cb && !cb.disabled) {
-      cb.checked = true;
-      updateSelectedCount();
-      const box = document.getElementById("service-checkboxes");
-      box.style.transition = "box-shadow 0.3s";
-      box.style.boxShadow = "0 0 0 4px rgba(155,114,207,0.3)";
-      setTimeout(() => { box.style.boxShadow = ""; }, 1500);
-    }
-  }, 600);
-}
+
+
 
 function initNav() {
   const hamburger = document.getElementById("hamburger");
@@ -1056,94 +993,8 @@ function initAnimations() {
   document.querySelectorAll(".fade-in,.slide-up,.slide-left,.slide-right").forEach(el => obs.observe(el));
 }
 
-function initPhone() {
-  document.getElementById("phone").addEventListener("input", e => {
-    let v = e.target.value.replace(/\D/g, "");
-    if (v.length >= 6) v = `(${v.slice(0,3)}) ${v.slice(3,6)}-${v.slice(6,10)}`;
-    else if (v.length >= 3) v = `(${v.slice(0,3)}) ${v.slice(3)}`;
-    e.target.value = v;
-  });
-}
 
-async function handleSubmit(e) {
-  e.preventDefault();
-  const btn = document.getElementById("submit-btn");
-  const successEl = document.getElementById("form-success");
-  const errorEl = document.getElementById("form-error");
-  successEl.style.display = "none";
-  errorEl.style.display = "none";
 
-  const firstName = document.getElementById("first-name").value.trim();
-  const lastName  = document.getElementById("last-name").value.trim();
-  const phone     = document.getElementById("phone").value.trim();
-  const email     = document.getElementById("email").value.trim();
-  const address   = document.getElementById("address").value.trim();
-
-  const checkedBoxes = document.querySelectorAll('input[name="services"]:checked');
-  if (checkedBoxes.length === 0) {
-    errorEl.textContent = "Please select at least one service.";
-    errorEl.style.display = "block"; return;
-  }
-  const service = Array.from(checkedBoxes).map(cb => {
-    const s = SERVICES.find(s => s.id === cb.value);
-    return s ? s.name : "Not Sure Yet";
-  }).join(", ");
-
-  const type  = document.querySelector('input[name="btype"]:checked')?.value || "Info Request";
-  const notes = document.getElementById("notes").value.trim();
-
-  if (!firstName || !lastName || !phone || !email) {
-    errorEl.textContent = "Please fill in all required fields.";
-    errorEl.style.display = "block"; return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errorEl.textContent = "Please enter a valid email address.";
-    errorEl.style.display = "block"; return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Sending\u2026';
-
-  const payload = {
-    timestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }),
-    firstName, lastName, phone, email, address, service, type, notes, status: "New"
-  };
-
-  if (SHEETS_ENDPOINT === "YOUR_APPS_SCRIPT_URL_HERE") {
-    await new Promise(r => setTimeout(r, 1200));
-    showSuccess(successEl, btn);
-    console.log("Demo mode — data:", payload);
-    return;
-  }
-
-  try {
-    await fetch(SHEETS_ENDPOINT, {
-      method: "POST", mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    showSuccess(successEl, btn);
-  } catch (err) {
-    btn.disabled = false;
-    btn.innerHTML = "Send Booking Request";
-    errorEl.textContent = "Something went wrong. Please try again.";
-    errorEl.style.display = "block";
-  }
-}
-
-function showSuccess(el, btn) {
-  el.textContent = "You\'re all set! 🌸 I\'ll be in touch within 24–48 hours. Can\'t wait to meet you!";
-  el.style.display = "block";
-  btn.innerHTML = "✓ Request Sent!";
-  btn.style.background = "var(--success)";
-  setTimeout(() => {
-    document.getElementById("booking-form").reset();
-    btn.disabled = false;
-    btn.innerHTML = "Send Booking Request";
-    btn.style.background = "";
-    el.style.display = "none";
-  }, 6000);
-}
 
 document.addEventListener("DOMContentLoaded", () => {
   renderServices();
