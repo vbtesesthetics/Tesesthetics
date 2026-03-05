@@ -18,7 +18,48 @@ images or media as the business grows.
 
 ---
 
-## ✏️ Editing the Website
+## 🔗 Booking System Links
+
+The website connects to an external booking system (ChairCare). There are **three links** to update whenever the booking URL changes — for example, when switching from a test slug to the real salon slug.
+
+### Where to find and update them
+
+Open `index.html` and search for `chaircare.netlify.app`. You'll find exactly **three occurrences**:
+
+| Location | What it does |
+|----------|-------------|
+| Navbar "Book Now" button | Opens the booking scheduler |
+| Hero "Book a Service" button | Opens the booking scheduler |
+| Booking section — **Book an Appointment** button | Opens the booking scheduler |
+
+There is also one link for:
+| Location | What it does |
+|----------|-------------|
+| Booking section — **Manage My Appointment** button | Opens the client portal |
+| Footer "Book Now" link | Opens the booking scheduler |
+| Footer "Admin" link (very faint, bottom-right) | Opens the admin dashboard |
+
+### How to update the salon slug
+
+The current test slug is `test-studio`. When you're ready to switch to the real salon slug:
+
+1. Open `index.html` in GitHub (click the ✏️ pencil icon)
+2. Use **Ctrl+F** (or Cmd+F on Mac) to find: `?b=test-studio`
+3. Replace all instances with your real slug, e.g. `?b=tesesthetics`
+4. Commit the change — Netlify will redeploy in ~30 seconds
+
+**Current links (for reference):**
+```
+Book / Schedule:  https://chaircare.netlify.app/booking/?b=test-studio
+Client Portal:    https://chaircare.netlify.app/portal/?b=test-studio
+Admin Dashboard:  https://chaircare.netlify.app/admin/
+```
+
+> 💡 **Tip:** The admin link doesn't use a slug — it's the same URL for all salons.
+
+---
+
+
 
 All edits happen inside `index.html`. Open it in any text editor
 (Notepad, VS Code, TextEdit, etc.). Everything you'll ever need to change
