@@ -1,0 +1,265 @@
+// functions/gcal-sync.js
+// Google Calendar two-way sync
+// GET  /api/gcal-sync?action=auth_url&business_slug=... (get OAuth URL)
+// POST /api/gcal-sync { action: "callback", code, state }
+// POST /api/gcal-sync { action: "sync_booking", booking_id } (create/update GCal event)
+// POST /api/gcal-sync { action: "fetch_blocks", business_slug } (import GCal blocks)
+// POST /api/gcal-sync { action: "disconnect" }
+// POST /api/gcal-sync { action: "settings_get" | "settings_save", ... }
+
+const { getSupabase } = require('./utils/supabase');
+const { jsonResponse, corsHeaders, rateLimit, getClientIP } = require('./utils/validate');
+const { verifyAdminToken } = require('./utils/auth');
+
+const GCAL_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GCAL_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GCAL_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${process.env.URL}/.netlify/functions/gcal-sync`;
+
+exports.handler = async (event) => {
+    if (event.httpMethod === 'OPTIONS') return corsHeaders();
+
+    const ip = getClientIP(event);
+    if (!rateLimit(ip)) return jsonResponse(429, { error: 'Too many requests' });
+
+    // Handle OAuth callback (GET with ?code=...)
+    if (event.httpMethod === 'GET') {
+        const params = event.queryStringParameters || {};
+        if (params.action === 'auth_url') return handleAuthUrl(params);
+        if (params.code) return handleOAuthCallback(params);
+        return jsonResponse(400, { error: 'Invalid request' });
+    }
+
+    let body;
+    try { body = JSON.parse(event.body); } catch { return jsonResponse(400, { error: 'Invalid JSON' }); }
+
+    // Verify admin for most actions
+    if (body.action !== 'sync_booking') {
+        const auth = verifyAdminToken(event);
+        if (!auth?.businessId) return jsonResponse(401, { error: 'Unauthorized' });
+        body._businessId = auth.businessId;
+    }
+
+    const supabase = getSupabase();
+
+    switch (body.action) {
+        case 'settings_get': return handleSettingsGet(supabase, body._businessId);
+        case 'settings_save': return handleSettingsSave(supabase, body._businessId, body);
+        case 'disconnect': return handleDisconnect(supabase, body._businessId);
+        case 'sync_booking': return handleSyncBooking(supabase, body);
+        case 'fetch_blocks': return handleFetchBlocks(supabase, body._businessId);
+        default: return jsonResponse(400, { error: 'Unknown action' });
+    }
+};
+
+function handleAuthUrl({ business_slug, redirect_back }) {
+    if (!GCAL_CLIENT_ID) return jsonResponse(500, { error: 'Google OAuth not configured. Add GOOGLE_CLIENT_ID to environment variables.' });
+    const state = Buffer.from(JSON.stringify({ business_slug, redirect_back })).toString('base64');
+    const params = new URLSearchParams({
+        client_id: GCAL_CLIENT_ID,
+        redirect_uri: GCAL_REDIRECT_URI,
+        response_type: 'code',
+        scope: 'https://www.googleapis.com/auth/calendar',
+        access_type: 'offline',
+        prompt: 'consent',
+        state
+    });
+    return jsonResponse(200, { auth_url: `https://accounts.google.com/o/oauth2/v2/auth?${params}` });
+}
+
+async function handleOAuthCallback({ code, state }) {
+    if (!GCAL_CLIENT_ID || !GCAL_CLIENT_SECRET) {
+        return { statusCode: 302, headers: { Location: '/admin/?gcal_error=not_configured' } };
+    }
+
+    let stateData = {};
+    try { stateData = JSON.parse(Buffer.from(state || '', 'base64').toString()); } catch {}
+
+    try {
+        const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                code, client_id: GCAL_CLIENT_ID, client_secret: GCAL_CLIENT_SECRET,
+                redirect_uri: GCAL_REDIRECT_URI, grant_type: 'authorization_code'
+            })
+        });
+        const tokens = await tokenRes.json();
+        if (tokens.error) throw new Error(tokens.error);
+
+        const supabase = getSupabase();
+
+        // Look up business by slug
+        const { data: business } = await supabase.from('businesses')
+            .select('id').eq('slug', stateData.business_slug).single();
+        if (!business) throw new Error('Business not found');
+
+        await supabase.from('gcal_settings').upsert({
+            business_id: business.id,
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token,
+            token_expiry: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
+            sync_enabled: true,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'business_id' });
+
+        const redirectTo = stateData.redirect_back || '/admin/?tab=settings&gcal_connected=1';
+        return { statusCode: 302, headers: { Location: redirectTo } };
+    } catch (err) {
+        console.error('GCal OAuth error:', err);
+        return { statusCode: 302, headers: { Location: '/admin/?gcal_error=1' } };
+    }
+}
+
+async function refreshAccessToken(supabase, businessId, gcal) {
+    if (!gcal.refresh_token) throw new Error('No refresh token');
+    const res = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            client_id: GCAL_CLIENT_ID, client_secret: GCAL_CLIENT_SECRET,
+            refresh_token: gcal.refresh_token, grant_type: 'refresh_token'
+        })
+    });
+    const tokens = await res.json();
+    if (tokens.error) throw new Error(tokens.error);
+    const expiry = new Date(Date.now() + tokens.expires_in * 1000).toISOString();
+    await supabase.from('gcal_settings').update({
+        access_token: tokens.access_token, token_expiry: expiry, updated_at: new Date().toISOString()
+    }).eq('business_id', businessId);
+    return tokens.access_token;
+}
+
+async function getValidToken(supabase, businessId) {
+    const { data: gcal } = await supabase.from('gcal_settings')
+        .select('*').eq('business_id', businessId).single();
+    if (!gcal?.sync_enabled || !gcal.access_token) return null;
+    if (new Date(gcal.token_expiry) <= new Date(Date.now() + 60000)) {
+        return refreshAccessToken(supabase, businessId, gcal);
+    }
+    return gcal.access_token;
+}
+
+async function gcalRequest(token, method, path, body) {
+    const res = await fetch(`https://www.googleapis.com/calendar/v3${path}`, {
+        method,
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: body ? JSON.stringify(body) : undefined
+    });
+    if (!res.ok) throw new Error(`GCal API error: ${res.status}`);
+    return method === 'DELETE' ? null : res.json();
+}
+
+async function handleSyncBooking(supabase, body) {
+    const { booking_id } = body;
+    if (!booking_id) return jsonResponse(400, { error: 'booking_id required' });
+
+    const { data: booking } = await supabase.from('bookings')
+        .select('*, booking_items(name_snapshot), businesses(name, location_text, timezone, id)')
+        .eq('id', booking_id).single();
+    if (!booking) return jsonResponse(404, { error: 'Booking not found' });
+
+    const businessId = booking.business_id;
+    try {
+        const token = await getValidToken(supabase, businessId);
+        if (!token) return jsonResponse(200, { skipped: 'GCal not connected' });
+
+        const { data: gcal } = await supabase.from('gcal_settings')
+            .select('calendar_id').eq('business_id', businessId).single();
+
+        const calendarId = gcal?.calendar_id || 'primary';
+        const services = booking.booking_items?.map(i => i.name_snapshot).join(', ') || '';
+        const event = {
+            summary: `${booking.customer_name} — ${services}`,
+            description: `Client: ${booking.customer_name}\nPhone: ${booking.customer_phone || ''}\nEmail: ${booking.customer_email || ''}\nServices: ${services}`,
+            location: booking.businesses?.location_text || '',
+            start: { dateTime: booking.start_at, timeZone: booking.businesses?.timezone || 'UTC' },
+            end: { dateTime: booking.end_at, timeZone: booking.businesses?.timezone || 'UTC' }
+        };
+
+        let eventId = booking.gcal_event_id;
+        if (eventId) {
+            // Update existing
+            await gcalRequest(token, 'PUT', `/calendars/${calendarId}/events/${eventId}`, event);
+        } else {
+            // Create new
+            const created = await gcalRequest(token, 'POST', `/calendars/${calendarId}/events`, event);
+            eventId = created.id;
+            await supabase.from('bookings').update({ gcal_event_id: eventId }).eq('id', booking_id);
+        }
+        return jsonResponse(200, { synced: true, event_id: eventId });
+    } catch (err) {
+        console.error('GCal sync error:', err);
+        return jsonResponse(200, { synced: false, error: err.message });
+    }
+}
+
+async function handleFetchBlocks(supabase, businessId) {
+    try {
+        const token = await getValidToken(supabase, businessId);
+        if (!token) return jsonResponse(400, { error: 'GCal not connected' });
+
+        const { data: gcal } = await supabase.from('gcal_settings')
+            .select('calendar_id').eq('business_id', businessId).single();
+        const calendarId = gcal?.calendar_id || 'primary';
+
+        const now = new Date().toISOString();
+        const future = new Date(Date.now() + 30 * 86400000).toISOString();
+        const events = await gcalRequest(token, 'GET',
+            `/calendars/${calendarId}/events?timeMin=${now}&timeMax=${future}&singleEvents=true&orderBy=startTime&maxResults=100`);
+
+        // Filter to personal/blocked events (not created by us)
+        const personalEvents = (events.items || []).filter(e =>
+            !e.summary?.includes(' — ') && e.status !== 'cancelled'
+        );
+
+        // Upsert as one-off blocks
+        let created = 0;
+        for (const ev of personalEvents) {
+            if (!ev.start?.dateTime) continue; // Skip all-day events
+            const { data: existing } = await supabase.from('one_off_blocks')
+                .select('id').eq('business_id', businessId)
+                .eq('name', `GCal: ${ev.summary || 'Busy'}`).eq('start_at', ev.start.dateTime);
+            if (existing?.length) continue;
+            await supabase.from('one_off_blocks').insert({
+                business_id: businessId,
+                name: `GCal: ${ev.summary || 'Busy'}`,
+                start_at: ev.start.dateTime,
+                end_at: ev.end.dateTime
+            });
+            created++;
+        }
+        return jsonResponse(200, { imported: created, total_found: personalEvents.length });
+    } catch (err) {
+        console.error('GCal fetch error:', err);
+        return jsonResponse(500, { error: err.message });
+    }
+}
+
+async function handleSettingsGet(supabase, businessId) {
+    const { data } = await supabase.from('gcal_settings').select('sync_enabled, calendar_id, token_expiry, access_token')
+        .eq('business_id', businessId).single();
+    return jsonResponse(200, {
+        connected: !!(data?.access_token),
+        sync_enabled: data?.sync_enabled || false,
+        calendar_id: data?.calendar_id || 'primary',
+        token_valid: data?.token_expiry ? new Date(data.token_expiry) > new Date() : false
+    });
+}
+
+async function handleSettingsSave(supabase, businessId, body) {
+    await supabase.from('gcal_settings').upsert({
+        business_id: businessId,
+        calendar_id: body.calendar_id || 'primary',
+        sync_enabled: body.sync_enabled || false,
+        updated_at: new Date().toISOString()
+    }, { onConflict: 'business_id' });
+    return jsonResponse(200, { saved: true });
+}
+
+async function handleDisconnect(supabase, businessId) {
+    await supabase.from('gcal_settings').update({
+        access_token: null, refresh_token: null, sync_enabled: false,
+        updated_at: new Date().toISOString()
+    }).eq('business_id', businessId);
+    return jsonResponse(200, { disconnected: true });
+}

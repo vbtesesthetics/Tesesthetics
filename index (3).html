@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>My Appointments</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAF8F5;--surface:#FFF;--primary:#2D2A26;--accent:#8B6F4E;--accent-bg:#F3EDE4;--muted:#7A756E;--border:#E8E3DC;--success:#3A7D44;--success-bg:#E8F5EA;--error:#C44536;--error-bg:#FFF0EE;--radius:12px;--radius-sm:8px;--shadow:0 2px 8px rgba(45,42,38,.08);--font:'DM Sans',system-ui,sans-serif;--font-display:'Fraunces',Georgia,serif}
+html{font-size:16px}body{font-family:var(--font);background:var(--bg);color:var(--primary);min-height:100dvh;-webkit-font-smoothing:antialiased}
+.shell{max-width:480px;margin:0 auto;padding:16px}
+.header{text-align:center;padding:24px 0 16px}
+.header h1{font-family:var(--font-display);font-size:1.4rem}
+.header p{font-size:.85rem;color:var(--muted);margin-top:4px}
+.card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:12px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:5px}
+.fg input{width:100%;padding:12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-family:var(--font);font-size:1rem}
+.fg input:focus{outline:none;border-color:var(--accent)}
+.btn{display:block;width:100%;padding:13px;border-radius:var(--radius);font-family:var(--font);font-size:.95rem;font-weight:600;cursor:pointer;border:none;text-align:center}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-outline{background:var(--surface);border:2px solid var(--border);color:var(--primary)}
+.btn-danger{background:var(--error);color:#fff}
+.btn-sm{padding:8px 14px;font-size:.8rem;display:inline-block;width:auto}
+.btn:disabled{opacity:.5}
+.error{padding:10px 14px;background:var(--error-bg);border-radius:var(--radius-sm);color:var(--error);font-size:.85rem;margin-bottom:12px}
+.success{padding:10px 14px;background:var(--success-bg);border-radius:var(--radius-sm);color:var(--success);font-size:.85rem;margin-bottom:12px}
+.section{font-weight:700;font-size:.9rem;margin:20px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.bk-card{background:var(--surface);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:10px;border-left:3px solid var(--accent)}
+.bk-card.past{opacity:.7;border-left-color:var(--border)}
+.bk-time{font-weight:700;font-size:.9rem}.bk-svcs{font-size:.8rem;color:var(--muted);margin-top:2px}
+.bk-actions{display:flex;gap:6px;margin-top:8px}
+.hidden{display:none}
+.pin-dots{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.pin-dot{width:42px;height:50px;border:2px solid var(--border);border-radius:var(--radius-sm);text-align:center;font-size:1.4rem;font-weight:700;font-family:var(--font)}
+.pin-dot:focus{border-color:var(--accent);outline:none}
+.welcome{text-align:center;margin-bottom:20px}
+.welcome .name{font-family:var(--font-display);font-size:1.2rem;margin-bottom:4px}
+.welcome .visits{font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="header">
+<h1 id="portalTitle">My Appointments</h1>
+<p id="portalSubtitle">View and manage your bookings</p>
+</div>
+
+<div id="loginView">
+<div class="card">
+<div class="fg"><label>Phone Number or Email</label><input type="text" id="loginPhone" placeholder="(555) 123-4567 or jane@example.com" autocomplete="username" inputmode="email"></div>
+<div class="fg"><label>4-Digit PIN</label>
+<div class="pin-dots"><input class="pin-dot" type="tel" maxlength="1" id="p1" oninput="pinNext(this,2)"><input class="pin-dot" type="tel" maxlength="1" id="p2" oninput="pinNext(this,3)" onkeydown="pinBack(event,1)"><input class="pin-dot" type="tel" maxlength="1" id="p3" oninput="pinNext(this,4)" onkeydown="pinBack(event,2)"><input class="pin-dot" type="tel" maxlength="1" id="p4" oninput="pinDone()" onkeydown="pinBack(event,3)"></div>
+</div>
+<div id="loginError" class="error hidden"></div>
+<button class="btn btn-primary" onclick="doLogin()" id="loginBtn">Sign In</button>
+<div style="text-align:center;margin-top:12px"><button class="btn btn-outline btn-sm" onclick="showSetPin()" style="width:auto">First time? Set your PIN</button></div>
+</div>
+</div>
+
+<div id="setPinView" class="hidden">
+<div class="card">
+<p style="font-size:.88rem;margin-bottom:14px">Enter your phone or email to look up your account, then choose a 4-digit PIN.</p>
+<div class="fg"><label>Phone Number or Email</label><input type="text" id="spPhone" autocomplete="username" placeholder="(555) 123-4567 or jane@example.com"></div>
+<div class="fg"><label>Choose a 4-Digit PIN</label><input type="tel" id="spPin" maxlength="4" placeholder="1234" style="text-align:center;font-size:1.2rem;letter-spacing:8px"></div>
+<div id="spError" class="error hidden"></div>
+<div id="spSuccess" class="success hidden"></div>
+<button class="btn btn-primary" onclick="setPin()">Set PIN</button>
+<button class="btn btn-outline" style="margin-top:8px" onclick="showLogin()">Back to Login</button>
+</div>
+</div>
+
+<div id="dashView" class="hidden">
+<div class="welcome"><div class="name" id="clientName"></div><div class="visits" id="clientVisits"></div></div>
+<div class="section">Upcoming Appointments</div>
+<div id="upcomingList"></div>
+<div class="section">Past Visits</div>
+<div id="pastList"></div>
+<div style="text-align:center;margin-top:20px"><button class="btn btn-outline btn-sm" onclick="doLogout()" style="width:auto">Sign Out</button></div>
+</div>
+</div>
+
+<script>
+const API_BASE='/.netlify/functions';
+const SLUG=new URLSearchParams(location.search).get('b')||window.SALON_SLUG||'tesesthetics';
+let authState={phone:'',hash:'',clientId:''};
+
+function pinNext(el,next){if(el.value.length===1)document.getElementById('p'+next)?.focus()}
+function pinBack(e,prev){if(e.key==='Backspace'&&!e.target.value)document.getElementById('p'+prev)?.focus()}
+function pinDone(){document.getElementById('loginBtn').focus()}
+function getPin(){return(document.getElementById('p1').value+document.getElementById('p2').value+document.getElementById('p3').value+document.getElementById('p4').value)}
+
+function showSetPin(){document.getElementById('loginView').classList.add('hidden');document.getElementById('setPinView').classList.remove('hidden');document.getElementById('dashView').classList.add('hidden')}
+function showLogin(){document.getElementById('loginView').classList.remove('hidden');document.getElementById('setPinView').classList.add('hidden');document.getElementById('dashView').classList.add('hidden')}
+function doLogout(){authState={phone:'',hash:'',clientId:''};showLogin()}
+
+async function doLogin(){
+const identifier=document.getElementById('loginPhone').value.trim();
+const pin=getPin();
+const err=document.getElementById('loginError');err.classList.add('hidden');
+if(!identifier||pin.length!==4){err.textContent='Enter your phone or email and 4-digit PIN';err.classList.remove('hidden');return}
+const isEmail=identifier.includes('@');
+try{
+const r=await fetch(API_BASE+'/public-portal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',business_slug:SLUG,phone:isEmail?null:identifier,email:isEmail?identifier:null,pin})});
+const d=await r.json();
+if(!r.ok){err.textContent=d.error;err.classList.remove('hidden');return}
+authState={phone:identifier,hash:d.session_token,clientId:d.client_id};
+document.getElementById('clientName').textContent='Hi, '+d.name+'!';
+document.getElementById('clientVisits').textContent=d.total_visits+' visits';
+document.getElementById('loginView').classList.add('hidden');
+document.getElementById('dashView').classList.remove('hidden');
+loadHistory();
+}catch(e){err.textContent='Unable to sign in';err.classList.remove('hidden')}}
+
+async function setPin(){
+const identifier=document.getElementById('spPhone').value.trim();
+const pin=document.getElementById('spPin').value.trim();
+const err=document.getElementById('spError'),suc=document.getElementById('spSuccess');
+err.classList.add('hidden');suc.classList.add('hidden');
+if(!identifier||!pin||pin.length!==4){err.textContent='Enter your phone or email and a 4-digit PIN';err.classList.remove('hidden');return}
+const isEmail=identifier.includes('@');
+try{
+const r=await fetch(API_BASE+'/public-portal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'set_pin',business_slug:SLUG,phone:isEmail?null:identifier,email:isEmail?identifier:null,pin})});
+const d=await r.json();
+if(!r.ok){err.textContent=d.error;err.classList.remove('hidden');return}
+suc.textContent='PIN set! You can now sign in.';suc.classList.remove('hidden')
+}catch(e){err.textContent='Unable to set PIN';err.classList.remove('hidden')}}
+
+async function loadHistory(){
+const r=await fetch(API_BASE+'/public-portal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'history',business_slug:SLUG,phone:authState.phone,auth_hash:authState.hash})});
+const d=await r.json();if(!r.ok)return;
+const tz=d.timezone||'America/New_York';
+document.getElementById('upcomingList').innerHTML=(d.upcoming||[]).map(b=>{
+const dt=new Date(b.start_at);
+const date=dt.toLocaleDateString('en-US',{timeZone:tz,weekday:'short',month:'short',day:'numeric'});
+const time=dt.toLocaleTimeString('en-US',{timeZone:tz,hour:'numeric',minute:'2-digit',hour12:true});
+const svcs=(b.booking_items||[]).map(i=>i.name_snapshot).join(', ');
+return`<div class="bk-card"><div class="bk-time">${date} at ${time}</div><div class="bk-svcs">${esc(svcs)}</div><div class="bk-actions">${b.can_cancel?`<button class="btn btn-outline btn-sm" onclick="cancelAppt('${b.id}')">Cancel</button>`:''} ${b.can_reschedule?`<button class="btn btn-outline btn-sm" onclick="showResched('${b.id}','${b.start_at}')">Reschedule</button>`:''} ${!b.can_cancel&&!b.can_reschedule?`<span style="font-size:.75rem;color:var(--muted)">Changes must be made ${d.cancel_window_hours}+ hrs before</span>`:''}</div></div>`
+}).join('')||'<p style="color:var(--muted);font-size:.88rem">No upcoming appointments</p>';
+document.getElementById('pastList').innerHTML=(d.past||[]).slice(0,10).map(b=>{
+const dt=new Date(b.start_at);
+const date=dt.toLocaleDateString('en-US',{timeZone:tz,month:'short',day:'numeric',year:'numeric'});
+const svcs=(b.booking_items||[]).map(i=>i.name_snapshot).join(', ');
+return`<div class="bk-card past"><div class="bk-time">${date}</div><div class="bk-svcs">${esc(svcs)}</div><div class="bk-actions"><a href="/booking/?b=${SLUG}&rebook=${b.id}" class="btn btn-outline btn-sm" style="text-decoration:none;margin-top:6px">Book Again</a></div></div>`
+}).join('')||'<p style="color:var(--muted);font-size:.88rem">No past visits yet</p>'}
+
+async function cancelAppt(id){
+if(!confirm('Cancel this appointment?'))return;
+const r=await fetch(API_BASE+'/public-portal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'cancel',business_slug:SLUG,phone:authState.phone,auth_hash:authState.hash,booking_id:id})});
+const d=await r.json();
+if(!r.ok){alert(d.error);return}
+alert('Appointment cancelled');loadHistory()}
+
+function showResched(id,startAt){
+const dt=new Date(startAt);
+const html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px" id="reschedModal" onclick="if(event.target===this)this.remove()">
+<div class="card" style="max-width:360px;width:100%"><h3 style="font-family:var(--font-display);margin-bottom:12px">Reschedule</h3>
+<div class="fg"><label>New Date</label><input type="date" id="rDate" value="${dt.toISOString().split('T')[0]}"></div>
+<div class="fg"><label>New Time</label><input type="time" id="rTime" value="${dt.toTimeString().slice(0,5)}"></div>
+<div id="rErr" class="error hidden"></div>
+<button class="btn btn-primary" onclick="submitResched('${id}')">Reschedule</button>
+<button class="btn btn-outline" style="margin-top:8px" onclick="document.getElementById('reschedModal').remove()">Cancel</button>
+</div></div>`;
+document.body.insertAdjacentHTML('beforeend',html)}
+
+async function submitResched(id){
+const newStart=document.getElementById('rDate').value+'T'+document.getElementById('rTime').value+':00';
+const r=await fetch(API_BASE+'/public-portal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reschedule',business_slug:SLUG,phone:authState.phone,auth_hash:authState.hash,booking_id:id,new_start_at:newStart})});
+const d=await r.json();
+if(!r.ok){const e=document.getElementById('rErr');e.textContent=d.error;e.classList.remove('hidden');return}
+document.getElementById('reschedModal')?.remove();alert('Rescheduled!');loadHistory()}
+
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+</script>
+</body>
+</html>

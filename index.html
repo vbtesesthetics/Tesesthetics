@@ -1,1010 +1,247 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="Tesesthetics — Licensed esthetician in Buford, GA. Facials, waxing, and personalized skin treatments by Veronica."/>
-<title>Tesesthetics — Skin Care in Buford, GA</title>
-<link rel="icon" type="image/png" href="assets/logo.png"/>
-<meta property="og:title" content="Tesesthetics — Skin Care in Buford, GA"/>
-<meta property="og:image" content="assets/logo.png"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<style>
-/* =====================================================
-   TESESTHETICS — ALL STYLES
-   Brand: Lavender #C5A4E8 + Bronze #8B4A28
-   Fonts: Cormorant Garamond (display) + Jost (body)
-   To change colors: edit the :root variables below
-   ===================================================== */
+// functions/admin-actions.js
+// POST /api/admin-actions
+// Body: { action: "block_time"|"cancel"|"reschedule"|"manual_book", ...params }
+// All admin actions in one handler, dispatched by action field
 
-:root {
-  --lavender:       #C5A4E8;
-  --lavender-light: #EDE0F9;
-  --lavender-pale:  #F7F1FD;
-  --lavender-deep:  #9B72CF;
-  --bronze:         #8B4A28;
-  --bronze-light:   #B87046;
-  --bronze-pale:    #F9EFE8;
-  --cream:          #FAF7F2;
-  --cream-dark:     #F2EDE5;
-  --white:          #FFFFFF;
-  --dark:           #2C1A10;
-  --text:           #3D2B1F;
-  --text-muted:     #7A6055;
-  --border:         #E2D4F0;
-  --success:        #6BAE8B;
-  --nav-h:          72px;
-  --radius:         16px;
-  --radius-sm:      10px;
-  --shadow:         0 4px 24px rgba(139,74,40,0.08);
-  --shadow-hover:   0 12px 40px rgba(139,74,40,0.15);
-  --ease:           0.35s cubic-bezier(0.4,0,0.2,1);
-  --font-display:   'Cormorant Garamond', Georgia, serif;
-  --font-body:      'Jost', sans-serif;
+const { getSupabase } = require('./utils/supabase');
+const { jsonResponse, corsHeaders, isUUID } = require('./utils/validate');
+const { requireAdmin } = require('./utils/auth');
+const { validateSlotAvailable, computeTotalDuration, naiveDatetimeToUtc } = require('./utils/availability');
+
+exports.handler = async (event) => {
+    if (event.httpMethod === 'OPTIONS') return corsHeaders();
+    if (event.httpMethod !== 'POST') return jsonResponse(405, { error: 'Method not allowed' });
+
+    let body;
+    try {
+        body = JSON.parse(event.body);
+    } catch {
+        return jsonResponse(400, { error: 'Invalid request' });
+    }
+
+    try {
+        const supabase = getSupabase();
+        const { businessId } = await requireAdmin(event, supabase);
+
+        switch (body.action) {
+            case 'block_time':
+                return await blockTime(supabase, businessId, body);
+            case 'cancel':
+                return await cancelBooking(supabase, businessId, body);
+            case 'reschedule':
+                return await rescheduleBooking(supabase, businessId, body);
+            case 'manual_book':
+                return await manualBook(supabase, businessId, body);
+            default:
+                return jsonResponse(400, { error: 'Unknown action' });
+        }
+    } catch (err) {
+        if (err.status) return jsonResponse(err.status, { error: err.message });
+        console.error('Admin action error:', err);
+        return jsonResponse(500, { error: 'Action failed' });
+    }
+};
+
+// Block time (one-off)
+async function blockTime(supabase, businessId, body) {
+    const { name, start_at, end_at } = body;
+    if (!start_at || !end_at) {
+        return jsonResponse(400, { error: 'Start and end times are required' });
+    }
+
+    // Look up business timezone to convert local times to UTC
+    const { data: business } = await supabase
+        .from('businesses')
+        .select('timezone')
+        .eq('id', businessId)
+        .single();
+    const tz = business?.timezone || 'America/New_York';
+
+    // Parse naive datetime strings (e.g. "2026-03-04T12:00:00") as local business time
+    const startUtc = naiveDatetimeToUtc(start_at, tz);
+    const endUtc = naiveDatetimeToUtc(end_at, tz);
+
+    if (!startUtc || !endUtc || endUtc <= startUtc) {
+        return jsonResponse(400, { error: 'Invalid time range' });
+    }
+
+    const { data, error } = await supabase
+        .from('one_off_blocks')
+        .insert({
+            business_id: businessId,
+            name: name || 'Blocked',
+            start_at: startUtc.toISOString(),
+            end_at: endUtc.toISOString()
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Block time error:', error);
+        return jsonResponse(500, { error: 'Failed to block time' });
+    }
+    return jsonResponse(201, { block: data });
 }
 
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
-body { font-family: var(--font-body); background: var(--cream); color: var(--text); line-height: 1.7; overflow-x: hidden; }
-img { max-width: 100%; display: block; }
-a { color: inherit; text-decoration: none; }
-button { cursor: pointer; border: none; font-family: var(--font-body); }
-ul { list-style: none; }
+// Cancel booking
+async function cancelBooking(supabase, businessId, body) {
+    const { booking_id, internal_notes } = body;
+    if (!booking_id || !isUUID(booking_id)) {
+        return jsonResponse(400, { error: 'Invalid booking ID' });
+    }
 
-h1,h2,h3,h4 { font-family: var(--font-display); font-weight: 400; line-height: 1.15; }
-h1 { font-size: clamp(2.2rem, 5vw, 5rem); }
-h2 { font-size: clamp(1.8rem, 4vw, 3.2rem); }
-h3 { font-size: clamp(1.3rem, 3vw, 2.2rem); }
-h4 { font-size: clamp(1rem, 2vw, 1.5rem); }
+    const { data, error } = await supabase
+        .from('bookings')
+        .update({
+            status: 'cancelled',
+            internal_notes: internal_notes || null
+        })
+        .eq('id', booking_id)
+        .eq('business_id', businessId)
+        .eq('status', 'confirmed')
+        .select()
+        .single();
 
-.container { max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
-section { padding: 6rem 0; }
-
-.section-label {
-  font-family: var(--font-body); font-size: 0.7rem; font-weight: 600;
-  letter-spacing: 0.25em; text-transform: uppercase; color: var(--bronze-light);
-  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
-}
-.section-label::before { content: ""; width: 32px; height: 1px; background: var(--bronze-light); display: block; }
-
-/* SCROLL ANIMATIONS */
-.fade-in,.slide-up,.slide-left,.slide-right { opacity: 0; transition: opacity 0.7s ease, transform 0.7s ease; }
-.slide-up { transform: translateY(40px); }
-.slide-left { transform: translateX(-40px); }
-.slide-right { transform: translateX(40px); }
-.fade-in.visible,.slide-up.visible,.slide-left.visible,.slide-right.visible { opacity: 1; transform: none; }
-
-/* ── SHARED LOGO + RING ANIMATION ── */
-/* Used in both hero and about sections */
-@keyframes floatLogo { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-@keyframes rotateRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-/* ── NAVBAR ── */
-#navbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-  height: var(--nav-h); display: flex; align-items: center;
-  transition: background var(--ease), box-shadow var(--ease);
-  background: rgba(250,247,242,0.96);
-  backdrop-filter: blur(16px);
-}
-#navbar.scrolled {
-  background: rgba(250,247,242,0.96);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 2px 20px rgba(139,74,40,0.08);
-}
-.nav-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 1.5rem;
-}
-.nav-logo { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-display); font-size: 1.4rem; color: var(--bronze); }
-.nav-logo img { width: 44px; height: 44px; object-fit: contain; }
-#nav-menu { display: flex; align-items: center; gap: 2rem; }
-.nav-link {
-  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--text-muted); position: relative; transition: color var(--ease);
-}
-.nav-link::after {
-  content: ""; position: absolute; bottom: -3px; left: 0;
-  width: 0; height: 1px; background: var(--bronze); transition: width var(--ease);
-}
-.nav-link:hover,.nav-link.active { color: var(--bronze); }
-.nav-link:hover::after,.nav-link.active::after { width: 100%; }
-.nav-cta {
-  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 0.6rem 1.4rem; background: var(--bronze); color: var(--white); border-radius: 30px;
-  transition: background var(--ease), transform var(--ease);
-  white-space: nowrap;
-}
-.nav-cta:hover { background: var(--bronze-light); transform: translateY(-1px); }
-.hamburger { display: none; flex-direction: column; gap: 5px; background: none; padding: 4px; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
-.hamburger span { display: block; width: 24px; height: 2px; background: var(--bronze); border-radius: 2px; transition: var(--ease); }
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* ── HERO ── */
-#hero {
-  position: relative; min-height: 100vh; display: flex;
-  align-items: center; overflow: hidden; background: var(--lavender-pale); padding: 0;
-  width: 100%;
-}
-.hero-blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
-.hero-blob-1 { width: 600px; height: 600px; top: -100px; right: -100px; background: radial-gradient(circle, rgba(197,164,232,0.35) 0%, transparent 70%); }
-.hero-blob-2 { width: 400px; height: 400px; bottom: 50px; left: -50px; background: radial-gradient(circle, rgba(139,74,40,0.08) 0%, transparent 70%); }
-.hero-inner {
-  position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr;
-  align-items: center; gap: 3rem; max-width: 1160px; margin: 0 auto;
-  padding: var(--nav-h) 1.5rem 6rem;
-  width: 100%;
-}
-.hero-content { padding: 2rem 0; }
-.hero-eyebrow {
-  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--bronze-light); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;
-}
-.hero-eyebrow::before { content: "✦"; font-size: 0.6rem; color: var(--lavender-deep); }
-.hero-headline {
-  font-family: var(--font-display); font-size: clamp(2.6rem, 5.5vw, 5.2rem);
-  font-weight: 300; color: var(--dark); margin-bottom: 1.5rem; line-height: 1.1;
-}
-.hero-headline em { font-style: italic; color: var(--bronze); }
-.hero-sub { font-size: 1rem; color: var(--text-muted); max-width: 440px; margin-bottom: 2.5rem; line-height: 1.75; }
-.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-.btn-primary {
-  padding: 0.9rem 2rem; background: var(--bronze); color: var(--white); border-radius: 40px;
-  font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-  transition: background var(--ease), transform var(--ease), box-shadow var(--ease);
-  box-shadow: 0 4px 20px rgba(139,74,40,0.25); min-height: 44px; display: inline-flex; align-items: center;
-}
-.btn-primary:hover { background: var(--bronze-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,74,40,0.3); }
-.btn-outline {
-  padding: 0.9rem 2rem; border: 1.5px solid var(--lavender-deep); color: var(--lavender-deep);
-  border-radius: 40px; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; transition: all var(--ease); background: transparent;
-  min-height: 44px; display: inline-flex; align-items: center;
-}
-.btn-outline:hover { background: var(--lavender-deep); color: var(--white); transform: translateY(-2px); }
-
-/* ── LOGO CIRCLE + RINGS (shared hero & about) ── */
-.logo-img-wrap { display: flex; justify-content: center; align-items: center; position: relative; }
-
-.logo-ring {
-  position: absolute; border-radius: 50%; border: 1px solid; animation: rotateRing linear infinite;
+    if (error || !data) {
+        return jsonResponse(404, { error: 'Booking not found or already cancelled' });
+    }
+    return jsonResponse(200, { booking: data });
 }
 
-/* Hero sizing */
-.hero-img-wrap .logo-ring-1 {
-  width: calc(clamp(300px, 42vw, 480px) + 50px);
-  height: calc(clamp(300px, 42vw, 480px) + 50px);
-  border-color: rgba(197,164,232,0.3); animation-duration: 20s;
-}
-.hero-img-wrap .logo-ring-2 {
-  width: calc(clamp(300px, 42vw, 480px) + 100px);
-  height: calc(clamp(300px, 42vw, 480px) + 100px);
-  border-color: rgba(139,74,40,0.12); animation-duration: 35s; animation-direction: reverse;
-}
-.hero-logo-circle {
-  width: clamp(300px, 42vw, 480px); height: clamp(300px, 42vw, 480px);
-  border-radius: 50%; background: transparent;
-  box-shadow: 0 20px 80px rgba(197,164,232,0.35), 0 4px 24px rgba(139,74,40,0.1);
-  display: flex; align-items: center; justify-content: center; overflow: hidden;
-  animation: floatLogo 5s ease-in-out infinite; position: relative; z-index: 2;
-}
-/* CHANGED: margin-top reduced so logo sits higher inside rings */
-.hero-logo-circle img { width: 142%; height: 142%; object-fit: cover; display: block; margin-top: 28px; }
+// Reschedule booking
+async function rescheduleBooking(supabase, businessId, body) {
+    const { booking_id, new_start_at } = body;
+    if (!booking_id || !isUUID(booking_id) || !new_start_at) {
+        return jsonResponse(400, { error: 'Booking ID and new time are required' });
+    }
 
-/* About sizing — mirrors hero exactly, just smaller */
-.about-img-wrap .logo-ring-1 {
-  width: calc(200px + 40px); height: calc(200px + 40px);
-  border-color: rgba(197,164,232,0.3); animation-duration: 20s;
-}
-.about-img-wrap .logo-ring-2 {
-  width: calc(200px + 80px); height: calc(200px + 80px);
-  border-color: rgba(139,74,40,0.12); animation-duration: 35s; animation-direction: reverse;
-}
-.about-logo-circle {
-  width: 200px; height: 200px;
-  border-radius: 50%; background: transparent;
-  box-shadow: 0 10px 40px rgba(197,164,232,0.35), 0 4px 16px rgba(139,74,40,0.1);
-  display: flex; align-items: center; justify-content: center; overflow: hidden;
-  animation: floatLogo 5s ease-in-out infinite; position: relative; z-index: 2;
-}
-.about-logo-circle img { width: 145%; height: 145%; object-fit: cover; display: block; margin-top: 25px; }
+    // Fetch existing booking
+    const { data: existing } = await supabase
+        .from('bookings')
+        .select('*, booking_items(*)')
+        .eq('id', booking_id)
+        .eq('business_id', businessId)
+        .eq('status', 'confirmed')
+        .single();
 
-.hero-stats {
-  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 3rem; z-index: 3; white-space: nowrap;
-}
-.hero-stat { text-align: center; }
-.hero-stat strong { display: block; font-family: var(--font-display); font-size: 2rem; color: var(--bronze); font-weight: 300; }
-.hero-stat span { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+    if (!existing) {
+        return jsonResponse(404, { error: 'Booking not found' });
+    }
 
-/* ── SERVICES ── */
-#services { background: var(--white); }
-.services-header { text-align: center; margin-bottom: 4rem; }
-.services-header h2 { color: var(--dark); margin-bottom: 1rem; }
-.services-header p { color: var(--text-muted); max-width: 540px; margin: 0 auto; font-size: 1rem; }
-.service-category { margin-bottom: 3.5rem; }
-.category-label {
-  font-family: var(--font-body); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.25em;
-  text-transform: uppercase; color: var(--lavender-deep); margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 0.75rem;
-}
-.category-label::before { content: "◆"; font-size: 0.5rem; }
-.services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
-.service-card {
-  background: var(--cream); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 1.5rem; transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
-  position: relative; overflow: hidden;
-}
-.service-card::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--lavender), var(--bronze-light));
-  opacity: 0; transition: opacity var(--ease);
-}
-.service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--lavender); }
-.service-card:hover::before { opacity: 1; }
-.service-card.coming-soon { opacity: 0.72; }
-.service-card.coming-soon:hover { transform: none; box-shadow: none; }
-.card-icon { font-size: 1.2rem; color: var(--bronze-light); display: block; margin-bottom: 0.5rem; }
-.card-title-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
-.card-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; color: var(--dark); }
-.badge { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.22rem 0.65rem; border-radius: 20px; }
-.available-badge { background: rgba(107,174,139,0.15); color: #4a8b68; }
-.coming-soon-badge { background: rgba(197,164,232,0.25); color: var(--lavender-deep); }
-.card-meta { display: flex; align-items: center; gap: 1rem; font-size: 0.82rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
-.card-duration { color: var(--text-muted); }
-.card-price { font-family: var(--font-display); font-size: 1.1rem; color: var(--bronze); font-weight: 500; }
-.card-description { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.65; }
-.card-bullets { margin-bottom: 1.25rem; }
-.card-bullets li { font-size: 0.82rem; color: var(--text-muted); padding: 0.25rem 0 0.25rem 1.2rem; position: relative; }
-.card-bullets li::before { content: "—"; position: absolute; left: 0; color: var(--lavender-deep); font-size: 0.7rem; }
-.card-book-btn {
-  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; color: var(--bronze);
-  background: transparent; padding: 0.5rem 0; border-bottom: 1px solid var(--bronze);
-  transition: all var(--ease); min-height: 44px; display: inline-flex; align-items: center;
-}
-.card-book-btn:hover { color: var(--bronze-light); border-color: var(--bronze-light); letter-spacing: 0.12em; }
-.card-notify { font-size: 0.75rem; color: var(--lavender-deep); font-style: italic; }
+    // Calculate duration from existing booking
+    const origDuration = (new Date(existing.end_at) - new Date(existing.start_at)) / 60000;
 
-/* ── SERVICE CHECKBOXES ── */
-.service-checkboxes {
-  display: flex; flex-direction: column; gap: 0.35rem;
-  max-height: 260px; overflow-y: auto;
-  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  padding: 0.75rem; background: var(--white);
-}
-.service-checkboxes:focus-within { border-color: var(--lavender-deep); box-shadow: 0 0 0 3px rgba(155,114,207,0.12); }
-.checkbox-group-label {
-  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--bronze-light); padding: 0.4rem 0 0.2rem; margin-top: 0.25rem; border-top: 1px solid var(--border);
-}
-.checkbox-group-label:first-child { border-top: none; margin-top: 0; }
-.checkbox-item { display: flex; align-items: center; }
-.checkbox-item input[type=checkbox] { display: none; }
-.checkbox-item label {
-  display: flex; align-items: center; gap: 0.6rem; cursor: pointer;
-  font-size: 0.88rem; color: var(--text); padding: 0.4rem 0.5rem; border-radius: 6px;
-  width: 100%; transition: background var(--ease), color var(--ease); user-select: none;
-  min-height: 36px;
-}
-.checkbox-item label::before {
-  content: ""; width: 16px; height: 16px; min-width: 16px;
-  border: 1.5px solid var(--border); border-radius: 4px; background: var(--white);
-  transition: all var(--ease); text-align: center; line-height: 16px; font-size: 0.65rem;
-}
-.checkbox-item input[type=checkbox]:checked + label { background: var(--lavender-pale); color: var(--lavender-deep); }
-.checkbox-item input[type=checkbox]:checked + label::before { background: var(--lavender-deep); border-color: var(--lavender-deep); content: "✓"; color: white; }
-.checkbox-item.coming-soon-check label { color: var(--text-muted); font-style: italic; opacity: 0.65; cursor: not-allowed; }
-.selected-count { font-size: 0.75rem; color: var(--lavender-deep); margin-top: 0.4rem; min-height: 1.2em; }
+    // Fetch business data for validation
+    const { data: business } = await supabase
+        .from('businesses')
+        .select('timezone')
+        .eq('id', businessId)
+        .single();
+    const tz = business?.timezone || 'America/New_York';
 
-/* ── ABOUT ── */
-#about { background: linear-gradient(160deg, var(--lavender-pale) 0%, var(--cream) 60%); }
-.about-grid { display: grid; grid-template-columns: 1fr 1.4fr; align-items: start; gap: 4rem; }
-.about-visual { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
-.about-cert-tag {
-  background: var(--white); border: 1px solid var(--lavender); border-radius: 30px;
-  padding: 0.6rem 1.5rem; font-size: 0.78rem; color: var(--lavender-deep);
-  text-align: center; letter-spacing: 0.05em; max-width: 280px;
-}
-.about-text h2 { color: var(--dark); margin-bottom: 0.5rem; }
-.about-name { font-family: var(--font-display); font-size: 1.6rem; color: var(--bronze); font-style: italic; margin-bottom: 1.5rem; }
-.about-bio p { font-size: 1rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.8; }
+    // Convert naive local time to UTC
+    const newStart = naiveDatetimeToUtc(new_start_at, tz);
+    if (!newStart) return jsonResponse(400, { error: 'Invalid time format' });
+    const newEnd = new Date(newStart.getTime() + origDuration * 60000);
 
-/* ── BOOKING ── */
-#booking { background: var(--white); position: relative; overflow: hidden; }
-#booking::before {
-  content: ""; position: absolute; top: -200px; right: -200px; width: 500px; height: 500px;
-  border-radius: 50%; background: radial-gradient(circle, rgba(197,164,232,0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.booking-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start; }
-.booking-info h2 { color: var(--dark); margin-bottom: 1rem; }
-.booking-info > p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.75; }
-.booking-note {
-  background: var(--lavender-pale); border-left: 3px solid var(--lavender-deep);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 1rem 1.25rem;
-  font-size: 0.88rem; color: var(--lavender-deep); font-style: italic; margin-bottom: 2rem;
-}
-.booking-features { display: flex; flex-direction: column; gap: 0.85rem; }
-.booking-feature { display: flex; align-items: center; gap: 0.75rem; font-size: 0.88rem; color: var(--text-muted); }
-.booking-feature-icon {
-  width: 32px; height: 32px; border-radius: 50%; background: var(--lavender-pale);
-  display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;
-}
-.booking-form-card {
-  background: var(--cream); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow);
-}
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.form-group { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.1rem; }
-.form-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
-.req { color: var(--bronze-light); margin-left: 2px; }
-.form-input,.form-select,.form-textarea {
-  width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  background: var(--white); font-family: var(--font-body); font-size: 0.92rem;
-  color: var(--dark); transition: border-color var(--ease), box-shadow var(--ease); outline: none;
-  min-height: 44px;
-}
-.form-input:focus,.form-select:focus,.form-textarea:focus {
-  border-color: var(--lavender-deep); box-shadow: 0 0 0 3px rgba(155,114,207,0.12);
-}
-.form-input::placeholder,.form-textarea::placeholder { color: #b0a099; }
-.form-textarea { resize: vertical; min-height: 90px; }
-.type-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
-.type-opt { flex: 1; min-width: 130px; }
-.type-opt input[type=radio] { display: none; }
-.type-opt label {
-  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
-  padding: 0.7rem 0.75rem; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  cursor: pointer; font-size: 0.8rem; font-weight: 500; color: var(--text-muted);
-  transition: all var(--ease); text-align: center; min-height: 44px;
-}
-.type-opt input[type=radio]:checked + label { border-color: var(--lavender-deep); background: var(--lavender-pale); color: var(--lavender-deep); }
-.type-opt label:hover { border-color: var(--lavender); }
-#submit-btn {
-  width: 100%; padding: 1rem; background: var(--bronze); color: var(--white); border-radius: 40px;
-  font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; transition: background var(--ease), transform var(--ease), box-shadow var(--ease);
-  box-shadow: 0 4px 20px rgba(139,74,40,0.25); display: flex; align-items: center; justify-content: center;
-  gap: 0.5rem; min-height: 52px;
-}
-#submit-btn:hover:not(:disabled) { background: var(--bronze-light); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,74,40,0.3); }
-#submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.form-success {
-  display: none; background: rgba(107,174,139,0.12); border: 1px solid rgba(107,174,139,0.4);
-  color: #3a7a58; border-radius: var(--radius-sm); padding: 1rem 1.25rem;
-  font-size: 0.9rem; margin-bottom: 1.25rem; text-align: center;
-}
-.form-error {
-  display: none; background: rgba(220,80,60,0.08); border: 1px solid rgba(220,80,60,0.25);
-  color: #b5352a; border-radius: var(--radius-sm); padding: 1rem 1.25rem;
-  font-size: 0.9rem; margin-bottom: 1.25rem;
+    const [settingsRes, rulesRes, blackoutsRes] = await Promise.all([
+        supabase.from('settings').select('*').eq('business_id', businessId).single(),
+        supabase.from('availability_rules').select('*').eq('business_id', businessId),
+        supabase.from('blackout_blocks').select('*').eq('business_id', businessId).eq('is_active', true)
+    ]);
+
+    // Temporarily cancel old booking for collision check
+    // (We don't want it to collide with itself)
+    await supabase
+        .from('bookings')
+        .update({ status: 'cancelled' })
+        .eq('id', booking_id);
+
+    try {
+        const validation = await validateSlotAvailable(supabase, {
+            businessId,
+            timezone: business.timezone,
+            startAt: newStart.toISOString(),
+            totalDurationMinutes: origDuration,
+            settings: settingsRes.data || {},
+            availabilityRules: rulesRes.data || [],
+            blackoutBlocks: blackoutsRes.data || []
+        });
+
+        if (!validation.valid) {
+            // Restore original booking
+            await supabase
+                .from('bookings')
+                .update({ status: 'confirmed' })
+                .eq('id', booking_id);
+            return jsonResponse(409, { error: 'The new time is not available' });
+        }
+
+        // Update booking with new time
+        const { data: updated, error: updateErr } = await supabase
+            .from('bookings')
+            .update({
+                start_at: newStart.toISOString(),
+                end_at: newEnd.toISOString(),
+                status: 'confirmed'
+            })
+            .eq('id', booking_id)
+            .select()
+            .single();
+
+        if (updateErr) {
+            await supabase.from('bookings').update({ status: 'confirmed' }).eq('id', booking_id);
+            return jsonResponse(500, { error: 'Failed to reschedule' });
+        }
+
+        return jsonResponse(200, { booking: updated });
+    } catch (err) {
+        // Restore on any error
+        await supabase.from('bookings').update({ status: 'confirmed' }).eq('id', booking_id);
+        throw err;
+    }
 }
 
-/* ── BOOKING ACTION BUTTONS ── */
-.booking-actions-card {
-  display: flex; flex-direction: column; gap: 1.25rem;
-  justify-content: center; padding: 1rem 0;
+// Manual booking (walk-in or phone booking)
+async function manualBook(supabase, businessId, body) {
+    const { start_at, end_at, customer_name, customer_phone, customer_email,
+        is_new_client, internal_notes, services_text } = body;
+
+    if (!start_at || !end_at || !customer_name) {
+        return jsonResponse(400, { error: 'Start time, end time, and customer name are required' });
+    }
+
+    // Look up business timezone
+    const { data: business } = await supabase
+        .from('businesses')
+        .select('timezone')
+        .eq('id', businessId)
+        .single();
+    const tz = business?.timezone || 'America/New_York';
+
+    const startUtc = naiveDatetimeToUtc(start_at, tz);
+    const endUtc = naiveDatetimeToUtc(end_at, tz);
+
+    const { data: booking, error } = await supabase
+        .from('bookings')
+        .insert({
+            business_id: businessId,
+            start_at: startUtc.toISOString(),
+            end_at: endUtc.toISOString(),
+            customer_name: customer_name.trim(),
+            customer_phone: customer_phone?.trim() || null,
+            customer_email: customer_email?.trim() || null,
+            is_new_client: !!is_new_client,
+            status: 'confirmed',
+            internal_notes: internal_notes || services_text || null
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Manual book error:', error);
+        return jsonResponse(500, { error: 'Failed to create booking' });
+    }
+
+    return jsonResponse(201, { booking });
 }
-.booking-action-btn {
-  display: flex; align-items: center; gap: 1.25rem;
-  padding: 1.5rem 1.75rem; border-radius: var(--radius);
-  border: 1.5px solid; text-decoration: none;
-  transition: transform var(--ease), box-shadow var(--ease), background var(--ease), border-color var(--ease);
-}
-.booking-action-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
-.booking-action-primary {
-  background: var(--bronze); border-color: var(--bronze); color: var(--white);
-  box-shadow: 0 4px 20px rgba(139,74,40,0.25);
-}
-.booking-action-primary:hover { background: var(--bronze-light); border-color: var(--bronze-light); }
-.booking-action-secondary {
-  background: var(--cream); border-color: var(--lavender-deep); color: var(--lavender-deep);
-}
-.booking-action-secondary:hover { background: var(--lavender-pale); }
-.booking-action-icon { font-size: 1.6rem; flex-shrink: 0; }
-.booking-action-text { display: flex; flex-direction: column; gap: 0.2rem; flex: 1; }
-.booking-action-text strong { font-family: var(--font-display); font-size: 1.3rem; font-weight: 500; line-height: 1.2; }
-.booking-action-primary .booking-action-text strong { color: var(--white); }
-.booking-action-text span { font-size: 0.82rem; opacity: 0.8; letter-spacing: 0.02em; }
-.booking-action-arrow { font-size: 1.4rem; flex-shrink: 0; transition: transform var(--ease); }
-.booking-action-btn:hover .booking-action-arrow { transform: translateX(4px); }
-#faq { background: var(--lavender-pale); }
-.faq-header { text-align: center; margin-bottom: 3.5rem; }
-.faq-header h2 { color: var(--dark); margin-bottom: 0.75rem; }
-.faq-header p { color: var(--text-muted); }
-.faq-wrap { max-width: 780px; margin: 0 auto; }
-.faq-item { border-bottom: 1px solid var(--border); }
-.faq-q {
-  width: 100%; display: flex; justify-content: space-between; align-items: center;
-  padding: 1.25rem 0; background: none; font-family: var(--font-display); font-size: 1.1rem;
-  font-weight: 400; color: var(--dark); text-align: left; transition: color var(--ease); gap: 1rem;
-  min-height: 44px;
-}
-.faq-q:hover { color: var(--bronze); }
-.faq-chevron { font-size: 1.4rem; color: var(--bronze-light); transition: transform var(--ease); flex-shrink: 0; line-height: 1; }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-.faq-a p { padding-bottom: 1.25rem; font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; }
-
-/* ── FOOTER ── */
-footer { background: var(--dark); color: rgba(255,255,255,0.7); padding: 4rem 0 2.5rem; }
-.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
-.footer-logo { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
-.footer-logo img { width: 48px; height: 48px; object-fit: contain; }
-.footer-logo span { font-family: var(--font-display); font-size: 1.4rem; color: var(--lavender-light); }
-.footer-tagline { font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.5rem; max-width: 260px; font-style: italic; color: rgba(255,255,255,0.5); }
-.footer-col h4 {
-  font-family: var(--font-body); font-size: 0.68rem; font-weight: 600;
-  letter-spacing: 0.2em; text-transform: uppercase; color: var(--lavender-light); margin-bottom: 1.25rem;
-}
-.footer-links { display: flex; flex-direction: column; gap: 0.65rem; }
-.footer-links a { font-size: 0.88rem; color: rgba(255,255,255,0.55); transition: color var(--ease); }
-.footer-links a:hover { color: var(--lavender-light); }
-.footer-contact-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.88rem; color: rgba(255,255,255,0.55); margin-bottom: 0.65rem; }
-.footer-contact-icon { font-size: 0.9rem; color: var(--lavender); flex-shrink: 0; }
-.footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem;
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
-}
-.footer-bottom span { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
-
-/* ══════════════════════════════════════════════════
-   RESPONSIVE — Tablet (max 900px)
-══════════════════════════════════════════════════ */
-@media (max-width: 900px) {
-  section { padding: 5rem 0; }
-  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding-top: calc(var(--nav-h) + 1rem); padding-bottom: 2rem; }
-  .hero-stats { position: relative; bottom: auto; left: auto; transform: none; justify-content: center; flex-wrap: wrap; gap: 1.5rem; padding: 1rem 0; }
-  .hero-content { padding: 1rem 0 0; order: 2; }
-  .hero-img-wrap { order: 1; }
-  .hero-sub { margin: 0 auto 2rem; }
-  .hero-actions { justify-content: center; }
-  .hero-stats { gap: 1.5rem; }
-  .hero-img-wrap .logo-ring-1 { width: calc(clamp(220px, 45vw, 340px) + 40px); height: calc(clamp(220px, 45vw, 340px) + 40px); }
-  .hero-img-wrap .logo-ring-2 { width: calc(clamp(220px, 45vw, 340px) + 80px); height: calc(clamp(220px, 45vw, 340px) + 80px); }
-  .hero-logo-circle { width: clamp(220px, 45vw, 340px); height: clamp(220px, 45vw, 340px); }
-  .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-  .about-visual { order: -1; }
-  .booking-layout { grid-template-columns: 1fr; gap: 2.5rem; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .footer-grid > div:first-child { grid-column: 1 / -1; }
-}
-
-/* ══════════════════════════════════════════════════
-   RESPONSIVE — Mobile (max 640px)
-══════════════════════════════════════════════════ */
-@media (max-width: 640px) {
-  :root { --nav-h: 64px; }
-  section { padding: 4rem 0; }
-  .container { padding: 0 1.25rem; }
-
-  /* NAV */
-  .hamburger { display: flex; }
-  #nav-menu {
-    position: fixed; top: var(--nav-h); left: 0; right: 0;
-    background: rgba(250,247,242,0.98); backdrop-filter: blur(16px);
-    flex-direction: column; align-items: center; gap: 0; padding: 0;
-    max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease;
-    box-shadow: 0 4px 20px rgba(139,74,40,0.08);
-  }
-  #nav-menu.open { max-height: 500px; padding: 1.25rem 0; }
-  #nav-menu li { width: 100%; text-align: center; }
-  .nav-link { display: block; padding: 0.85rem 2rem; }
-  .nav-cta { margin: 0.5rem 2rem; display: inline-block; }
-  .nav-logo span { font-size: 1.1rem; }
-  .nav-logo img { width: 36px; height: 36px; }
-
-  /* HERO */
-  .hero-inner { padding-top: calc(var(--nav-h) + 0.5rem); padding-bottom: 2rem; }
-  .hero-logo-circle { width: 62vw; height: 62vw; max-width: 260px; max-height: 260px; }
-  .hero-img-wrap .logo-ring-1 { width: calc(62vw + 30px); height: calc(62vw + 30px); max-width: 290px; max-height: 290px; }
-  .hero-img-wrap .logo-ring-2 { width: calc(62vw + 60px); height: calc(62vw + 60px); max-width: 320px; max-height: 320px; }
-  .hero-img-wrap { padding: 0rem 0; }
-  .hero-stats { position: relative; bottom: auto; left: auto; transform: none; justify-content: center; flex-wrap: wrap; gap: 1.25rem; padding: 1rem 0; }
-  .hero-stat strong { font-size: 1.5rem; }
-
-  /* CHANGED: nudge logo image a bit higher on mobile */
-   .hero-logo-circle img { width: 142%; height: 142%; margin-top: 18px; }
-
-  /* SERVICES */
-  .services-grid { grid-template-columns: 1fr; }
-
-  /* ABOUT */
-  .about-logo-circle { width: 50vw; height: 50vw; max-width: 180px; max-height: 180px; }
-  .about-img-wrap .logo-ring-1 { width: calc(50vw + 25px); height: calc(50vw + 25px); max-width: 205px; max-height: 205px; }
-  .about-img-wrap .logo-ring-2 { width: calc(50vw + 50px); height: calc(50vw + 50px); max-width: 230px; max-height: 230px; }
-
-  /* BOOKING FORM */
-  .booking-form-card { padding: 1.5rem; }
-  .form-row { grid-template-columns: 1fr; }
-  .type-row { flex-direction: column; }
-  .type-opt { min-width: unset; }
-
-  /* FAQ */
-  .faq-q { font-size: 1rem; padding: 1rem 0; }
-
-  /* FOOTER */
-  .footer-grid { grid-template-columns: 1fr; }
-  .footer-bottom { flex-direction: column; text-align: center; }
-}
-
-/* ══════════════════════════════════════════════════
-   RESPONSIVE — Small mobile (max 380px)
-══════════════════════════════════════════════════ */
-@media (max-width: 380px) {
-  .hero-logo-circle { width: 58vw; height: 58vw; max-width: 200px; max-height: 200px; }
-  .hero-img-wrap .logo-ring-1 { width: calc(58vw + 25px); height: calc(58vw + 25px); max-width: 225px; max-height: 225px; }
-  .hero-img-wrap .logo-ring-2 { width: calc(58vw + 50px); height: calc(58vw + 50px); max-width: 250px; max-height: 250px; }
-  .btn-primary, .btn-outline { padding: 0.8rem 1.4rem; font-size: 0.78rem; }
-  .hero-stats { gap: 1rem; }
-
-  /* CHANGED: tiny screens, a touch higher */
-  .hero-logo-circle img { width: 142%; height: 142%; margin-top: 16px; }
-}
-</style>
-<script src="logo.js"></script>
-</head>
-<body>
-
-<!-- ═══════════════════════════════════════════
-     NAVBAR
-═══════════════════════════════════════════ -->
-<nav id="navbar">
-  <div class="nav-inner">
-    <a href="#hero" class="nav-logo">
-      <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
-      <span>Tesesthetics</span>
-    </a>
-    <ul id="nav-menu">
-      <li><a href="#services" class="nav-link">Services</a></li>
-      <li><a href="#about" class="nav-link">About</a></li>
-      <li><a href="#faq" class="nav-link">FAQ</a></li>
-      <li><a href="https://tesesthetics.netlify.app/booking/?b=tesesthetics" class="nav-link nav-cta" target="_blank" rel="noopener">Book Now</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-
-<!-- ═══════════════════════════════════════════
-     HERO
-═══════════════════════════════════════════ -->
-<section id="hero">
-  <div class="hero-blob hero-blob-1"></div>
-  <div class="hero-blob hero-blob-2"></div>
-  <div class="hero-inner">
-    <div class="hero-content">
-      <p class="hero-eyebrow">Buford, GA &middot; Licensed Esthetician</p>
-      <h1 class="hero-headline">Your Skin,<br><em>Intentionally</em><br>Cared For.</h1>
-      <p class="hero-sub">Licensed esthetician in Buford, GA &mdash; clinically trained, personally invested, and ready to make your skin glow.</p>
-      <div class="hero-actions">
-        <a href="https://tesesthetics.netlify.app/booking/?b=tesesthetics" class="btn-primary" target="_blank" rel="noopener">Book a Service</a>
-        <a href="#services" class="btn-outline">View Services</a>
-      </div>
-    </div>
-    <div class="logo-img-wrap hero-img-wrap">
-      <div class="logo-ring logo-ring-2"></div>
-      <div class="logo-ring logo-ring-1"></div>
-      <div class="hero-logo-circle">
-        <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
-      </div>
-    </div>
-  </div>
-  <div class="hero-stats">
-    <div class="hero-stat"><strong>100%</strong><span>Personalized</span></div>
-    <div class="hero-stat"><strong>Buford</strong><span>Georgia</span></div>
-    <div class="hero-stat"><strong>New</strong><span>Clients Welcome</span></div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     SERVICES
-═══════════════════════════════════════════ -->
-<section id="services">
-  <div class="container">
-    <div class="services-header slide-up">
-      <p class="section-label">What We Offer</p>
-      <h2>Services &amp; Treatments</h2>
-      <p>Every service is customized to your skin. All pricing shown is a range &mdash; your exact quote is confirmed at booking.</p>
-    </div>
-    <div id="services-container"></div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     ABOUT
-═══════════════════════════════════════════ -->
-<section id="about">
-  <div class="container">
-    <div class="about-grid">
-      <div class="about-visual slide-left">
-        <div class="logo-img-wrap about-img-wrap">
-          <div class="logo-ring logo-ring-2"></div>
-          <div class="logo-ring logo-ring-1"></div>
-          <div class="about-logo-circle">
-            <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
-          </div>
-        </div>
-        <div class="about-cert-tag">Licensed Esthetician &mdash; School of Skin &amp; Nail Care, Sandy Springs GA</div>
-      </div>
-      <div class="about-text slide-right">
-        <p class="section-label">Your Esthetician</p>
-        <h2>Meet Your Esthetician</h2>
-        <p class="about-name">Veronica</p>
-        <div class="about-bio" id="about-bio"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     BOOKING
-═══════════════════════════════════════════ -->
-<section id="booking">
-  <div class="container">
-    <div class="booking-layout">
-      <div class="booking-info slide-left">
-        <p class="section-label">Get Started</p>
-        <h2>Ready to Book?</h2>
-        <p>Use the online scheduler to pick your service and a time that works for you. You can also log in to view or manage any existing appointments.</p>
-        <div class="booking-note">Not sure which service is right for you? Book a consultation and we&rsquo;ll figure it out together.</div>
-        <div class="booking-features">
-          <div class="booking-feature"><span class="booking-feature-icon">📋</span>Full skin consultation with every new client</div>
-          <div class="booking-feature"><span class="booking-feature-icon">🌿</span>All treatments customized for your skin type</div>
-          <div class="booking-feature"><span class="booking-feature-icon">📍</span>Buford, GA &mdash; location details sent after booking</div>
-          <div class="booking-feature"><span class="booking-feature-icon">💜</span>New clients always welcome</div>
-        </div>
-      </div>
-      <div class="booking-actions-card slide-right">
-        <a href="https://tesesthetics.netlify.app/booking/?b=tesesthetics" class="booking-action-btn booking-action-primary" target="_blank" rel="noopener">
-          <span class="booking-action-icon">📅</span>
-          <span class="booking-action-text">
-            <strong>Book an Appointment</strong>
-            <span>Choose a service &amp; pick your time</span>
-          </span>
-          <span class="booking-action-arrow">→</span>
-        </a>
-        <a href="https://tesesthetics.netlify.app/portal/?b=tesesthetics" class="booking-action-btn booking-action-secondary" target="_blank" rel="noopener">
-          <span class="booking-action-icon">🗓</span>
-          <span class="booking-action-text">
-            <strong>Manage My Appointment</strong>
-            <span>View, reschedule, or cancel</span>
-          </span>
-          <span class="booking-action-arrow">→</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     FAQ
-═══════════════════════════════════════════ -->
-<section id="faq">
-  <div class="container">
-    <div class="faq-header slide-up">
-      <p class="section-label">Questions</p>
-      <h2>Frequently Asked Questions</h2>
-      <p>Everything you need to know before your first visit.</p>
-    </div>
-    <div class="faq-wrap" id="faq-container"></div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════ -->
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-logo">
-          <img src="assets/logo.png" data-logo alt="Tesesthetics"/>
-          <span>Tesesthetics</span>
-        </div>
-        <p class="footer-tagline">Skin that glows from intention, not accident.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Navigate</h4>
-        <nav class="footer-links">
-          <a href="#hero">Home</a>
-          <a href="#services">Services</a>
-          <a href="#about">About</a>
-          <a href="#faq">FAQ</a>
-          <a href="https://tesesthetics.netlify.app/booking/?b=tesesthetics" target="_blank" rel="noopener">Book Now</a>
-        </nav>
-      </div>
-      <div class="footer-col">
-        <h4>Contact</h4>
-        <div class="footer-contact-item"><span class="footer-contact-icon">📍</span><span>Buford, GA</span></div>
-        <div class="footer-contact-item"><span class="footer-contact-icon">🕐</span><span>By appointment only</span></div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span id="footer-copy"></span>
-      <span>Located in Buford, GA &middot; By appointment only</span>
-      <a href="https://tesesthetics.netlify.app/admin/" target="_blank" rel="noopener" style="font-size:0.72rem;color:rgba(255,255,255,0.2);transition:color 0.3s;" onmouseover="this.style.color='rgba(255,255,255,0.5)'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">Admin</a>
-    </div>
-  </div>
-</footer>
-
-<script>
-// =====================================================
-//  TESESTHETICS — ALL JAVASCRIPT
-//
-//  ✏️ EASY EDIT SECTIONS:
-//  1. SERVICES DATA  — add/change/remove services
-//  2. ABOUT & FAQ    — bio paragraphs, FAQ Q&A
-//  3. GOOGLE SHEETS  — paste your endpoint URL here
-// =====================================================
-
-
-// ╔═════════════════════════════════════════════════╗
-// ║  1. SERVICES DATA                               ║
-// ║  available: true  = live, bookable              ║
-// ║  comingSoon: true = grayed out, not bookable    ║
-// ╚═════════════════════════════════════════════════╝
-const SERVICES = [
-  // ── FACIALS ─────────────────────────────────────
-  {
-    id:"signature-facial", name:"Custom / Signature Facial", category:"Facials",
-    duration:"60 min", price:"$95 – $115", icon:"✦", available:true, comingSoon:false,
-    description:"A fully personalized facial built around your skin's unique needs. Deep cleansing, steam, extractions, mask, and targeted serums — no two treatments are the same.",
-    bullets:["Full skin analysis & consultation","Steam & gentle extractions","Custom mask & serum treatment","Facial massage & moisturizer","SPF finishing touch"]
-  },
-  {
-    id:"express-facial", name:"Express Facial", category:"Facials",
-    duration:"30 min", price:"$65 – $80", icon:"✦", available:true, comingSoon:false,
-    description:"A focused skin refresh for when you're short on time but still want results. Cleanse, treat, protect.",
-    bullets:["Cleanse & tone","Targeted serum application","Moisturize & protect","Perfect before an event or as maintenance"]
-  },
-  {
-    id:"dermaplane-facial", name:"Dermaplane Facial", category:"Facials",
-    duration:"50 – 60 min", price:"$110 – $130", icon:"✦", available:true, comingSoon:false,
-    description:"A brightening treatment that gently removes dead skin cells and peach fuzz for a visibly smoother, glowing complexion. Also available as an add-on to any facial.",
-    bullets:["Manual exfoliation with sterile surgical blade","Removes vellus hair (peach fuzz)","Instantly smoother, brighter skin","Enhances serum & moisturizer absorption","Add-on to existing facial: +$25 – $40"]
-  },
-  {
-    id:"chemical-peel", name:"Light Chemical Peel", category:"Facials",
-    duration:"45 – 60 min", price:"$85 – $120", icon:"✦", available:false, comingSoon:true,
-    description:"A beginner-friendly peel targeting dullness, uneven texture, and mild discoloration. Pricing varies by peel type and expected downtime.",
-    bullets:["Lactic, glycolic, or mandelic options","Minimal to no downtime","Ideal for first-time peel clients","Post-peel care protocol included"]
-  },
-  // ── WAXING ──────────────────────────────────────
-  {
-    id:"brow-wax", name:"Brow Shaping", category:"Waxing",
-    duration:"15 min", price:"$15 – $25", icon:"◆", available:true, comingSoon:false,
-    description:"Clean, defined brows shaped to your natural arch and personal preference.",
-    bullets:["Consultation for desired shape","Hard or soft wax","Precise clean-up tweezing","Soothing post-wax oil"]
-  },
-  {
-    id:"lip-wax", name:"Lip Wax", category:"Waxing",
-    duration:"10 min", price:"$10 – $20", icon:"◆", available:true, comingSoon:false,
-    description:"Quick, smooth upper lip waxing with minimal irritation.",
-    bullets:["Gentle hard wax formula","Fast & comfortable","Calming post-wax serum"]
-  },
-  {
-    id:"chin-wax", name:"Chin Wax", category:"Waxing",
-    duration:"10 min", price:"$12 – $20", icon:"◆", available:true, comingSoon:false,
-    description:"Precise chin waxing using hard wax suited for sensitive skin.",
-    bullets:["Hard wax formula","Quick & precise","Soothing finish"]
-  },
-  {
-    id:"face-wax", name:"Full Face Wax", category:"Waxing",
-    duration:"30 min", price:"$45 – $75", icon:"◆", available:true, comingSoon:false,
-    description:"Complete facial hair removal — brows, lip, chin, sides of face, and forehead.",
-    bullets:["Brows, lip, chin & sides","Hard wax for sensitive areas","Soothing finish serum"]
-  },
-  // ── ADVANCED (COMING SOON) ──────────────────────
-  {
-    id:"led-therapy", name:"LED Light Therapy", category:"Advanced Treatments",
-    duration:"20 min add-on", price:"$30 add-on", icon:"◈", available:false, comingSoon:true,
-    description:"Red and blue LED wavelengths target acne-causing bacteria, stimulate collagen, and calm inflammation.",
-    bullets:["Red light: anti-aging & radiance","Blue light: acne & bacteria","Add-on to any facial"]
-  },
-  {
-    id:"lash-tint", name:"Lash & Brow Tinting", category:"Advanced Treatments",
-    duration:"30 min", price:"TBD", icon:"◈", available:false, comingSoon:true,
-    description:"Semi-permanent tint to define lashes and brows without daily mascara.",
-    bullets:["Patch test required 24 hrs prior","Multiple shades available","Lasts 4 – 6 weeks"]
-  }
-];
-const CATEGORIES = ["Facials","Waxing","Advanced Treatments"];
-
-
-// ╔═════════════════════════════════════════════════╗
-// ║  2. ABOUT & FAQ CONTENT                         ║
-// ║  Each string in BIO = one paragraph.            ║
-// ║  Use \' for apostrophes inside strings.         ║
-// ╚═════════════════════════════════════════════════╝
-const BIO = [
-  "Hi, I\'m Veronica — a licensed esthetician based in Buford, GA, originally from the beautiful city of Guadalajara, Mexico. Growing up, I was surrounded by a culture that celebrates taking care of yourself with intention and pride, and that spirit shapes everything I do.",
-  "Before esthetics, I built my career in dentistry — training as a dentist in Mexico and working as a dental assistant here in Georgia. That background gave me a deep understanding of facial anatomy, precision, and the kind of trust a client places in someone who works up close. When I\'m working on your skin, I\'m not guessing — I understand what\'s beneath it.",
-  "Making the transition into esthetics felt completely natural. The attention to detail, the care for the person in front of you, the commitment to real results — it\'s the same philosophy, just a different canvas. I\'m just getting started here in Buford and would be honored to have you as one of my first clients. Come as you are. Leave glowing."
-];
-
-const FAQS = [
-  {
-    q: "Do I need to do anything to prepare for my facial?",
-    a: "Come with a clean face if possible, but don\'t stress if you can\'t — we\'ll handle it. Avoid retinol or exfoliating acids for 24–48 hours before your appointment, and let me know about any allergies or medications when you book."
-  },
-  {
-    q: "How often should I get a facial?",
-    a: "For most skin types, every 4–6 weeks is the sweet spot — it lines up with your skin\'s natural cell turnover cycle. That said, we\'ll put together a plan that actually fits your schedule and goals."
-  },
-  {
-    q: "Is waxing okay for sensitive skin?",
-    a: "Yes! I use hard wax on sensitive areas, which adheres to the hair rather than the skin and is much gentler. Just let me know your skin type when booking and I\'ll adjust accordingly."
-  },
-  {
-    q: "What is dermaplaning and is it safe?",
-    a: "Dermaplaning is a manual exfoliation technique using a sterile surgical blade to gently remove dead skin cells and fine vellus hair (peach fuzz). It\'s safe for most skin types and leaves your skin noticeably smoother and brighter. It does not make hair grow back thicker — that\'s a myth!"
-  },
-  {
-    q: "I\'ve never had a facial before — what should I expect?",
-    a: "Welcome! We start with a quick skin consultation, then you relax while I take care of everything — cleansing, steam, extractions if needed, a mask, and moisturizing. Most first-timers leave wondering why they waited so long."
-  },
-  {
-    q: "What areas do you serve?",
-    a: "I\'m based in Buford, GA and serve the Buford, Sugar Hill, Suwanee, Cumming, and surrounding Gwinnett and Forsyth County areas."
-  },
-  {
-    q: "What\'s your cancellation policy?",
-    a: "Life happens — I just ask for at least 24 hours notice if you need to reschedule. I\'ll always be upfront and fair about it."
-  }
-];
-
-
-// ╔═════════════════════════════════════════════════╗
-// ║  3. GOOGLE SHEETS ENDPOINT                      ║
-// ║  Replace the string below with your Apps        ║
-// ║  Script Web App URL. See README for setup.      ║
-// ╚═════════════════════════════════════════════════╝
-const SHEETS_ENDPOINT = "YOUR_APPS_SCRIPT_URL_HERE";
-
-
-// ─────────────────────────────────────────────────
-//  RENDER & LOGIC — no need to edit below this line
-// ─────────────────────────────────────────────────
-
-function renderServices() {
-  const container = document.getElementById("services-container");
-  CATEGORIES.forEach(cat => {
-    const catServices = SERVICES.filter(s => s.category === cat);
-    if (!catServices.length) return;
-    const sec = document.createElement("div");
-    sec.className = "service-category";
-    sec.innerHTML = `<h3 class="category-label">${cat}</h3>`;
-    const grid = document.createElement("div");
-    grid.className = "services-grid";
-    catServices.forEach(s => {
-      const card = document.createElement("div");
-      card.className = "service-card" + (s.comingSoon ? " coming-soon" : "");
-      card.innerHTML = `
-        <span class="card-icon">${s.icon}</span>
-        <div class="card-title-row">
-          <h4 class="card-name">${s.name}</h4>
-          ${s.comingSoon
-            ? '<span class="badge coming-soon-badge">Coming Soon</span>'
-            : '<span class="badge available-badge">Available</span>'}
-        </div>
-        <div class="card-meta">
-          <span class="card-duration">⏱ ${s.duration}</span>
-          <span class="card-price">${s.price}</span>
-        </div>
-        <p class="card-description">${s.description}</p>
-        <ul class="card-bullets">${s.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
-        ${!s.comingSoon
-          ? `<a class="card-book-btn" href="https://tesesthetics.netlify.app/booking/?b=tesesthetics" target="_blank" rel="noopener">Book This →</a>`
-          : `<span class="card-notify">Notify me when available</span>`}
-      `;
-      grid.appendChild(card);
-    });
-    sec.appendChild(grid);
-    container.appendChild(sec);
-  });
-}
-
-
-
-
-function renderAbout() {
-  document.getElementById("about-bio").innerHTML = BIO.map(p => `<p>${p}</p>`).join("");
-}
-
-function renderFAQ() {
-  document.getElementById("faq-container").innerHTML = FAQS.map((item, i) => `
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFAQ(this)">
-        <span>${item.q}</span><span class="faq-chevron">›</span>
-      </button>
-      <div class="faq-a" id="faq-a-${i}"><p>${item.a}</p></div>
-    </div>`).join("");
-}
-
-function renderFooter() {
-  document.getElementById("footer-copy").textContent =
-    `© ${new Date().getFullYear()} Tesesthetics. All rights reserved.`;
-}
-
-function toggleFAQ(btn) {
-  const answer = btn.nextElementSibling;
-  const chevron = btn.querySelector(".faq-chevron");
-  const isOpen = answer.style.maxHeight && answer.style.maxHeight !== "0px";
-  document.querySelectorAll(".faq-a").forEach(a => { a.style.maxHeight = "0px"; });
-  document.querySelectorAll(".faq-chevron").forEach(c => { c.style.transform = ""; });
-  if (!isOpen) {
-    answer.style.maxHeight = answer.scrollHeight + "px";
-    chevron.style.transform = "rotate(90deg)";
-  }
-}
-
-
-
-
-function initNav() {
-  const hamburger = document.getElementById("hamburger");
-  const menu = document.getElementById("nav-menu");
-  const navbar = document.getElementById("navbar");
-  hamburger.addEventListener("click", () => {
-    hamburger.classList.toggle("open");
-    menu.classList.toggle("open");
-  });
-  menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
-    hamburger.classList.remove("open");
-    menu.classList.remove("open");
-  }));
-  window.addEventListener("scroll", () => {
-    navbar.classList.toggle("scrolled", window.scrollY > 60);
-    let current = "";
-    document.querySelectorAll("section[id]").forEach(s => {
-      if (window.scrollY >= s.offsetTop - 120) current = s.id;
-    });
-    document.querySelectorAll(".nav-link").forEach(l => {
-      l.classList.toggle("active", l.getAttribute("href") === "#" + current);
-    });
-  });
-}
-
-function initSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener("click", e => {
-      e.preventDefault();
-      const target = document.querySelector(a.getAttribute("href"));
-      if (!target) return;
-      const navH = document.getElementById("navbar").offsetHeight;
-      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navH, behavior: "smooth" });
-    });
-  });
-}
-
-function initAnimations() {
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
-  }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-  document.querySelectorAll(".fade-in,.slide-up,.slide-left,.slide-right").forEach(el => obs.observe(el));
-}
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  renderServices();
-  renderAbout();
-  renderFAQ();
-  renderFooter();
-  initNav();
-  initSmoothScroll();
-  initAnimations();
-});
-</script>
-</body>
-</html>
