@@ -163,7 +163,7 @@ function renderServices(filter) {
   const container = document.getElementById('services-container');
   const cats = filter === 'all' ? CATEGORIES : [filter];
   container.innerHTML = cats.map(cat => {
-    const items = SERVICES.filter(s => s.category === cat && (filter === 'all' || s.category === filter));
+    const items = SERVICES.filter(s => s.category === cat);
     if (!items.length) return '';
     const cards = items.map(s => {
       const addonObjs = (s.addons || []).map(id => ADDONS.find(a => a.id === id)).filter(Boolean);
