@@ -25,12 +25,12 @@
 .card-description { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; flex: 1; margin-bottom: 1.25rem; }
 .addons-toggle { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lavender-deep); background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; padding: 0; margin-bottom: 0.75rem; transition: color var(--ease); font-family: var(--font-body); }
 .addons-toggle:hover { color: var(--lavender); }
-.addons-toggle .chevron { transition: transform var(--ease); font-size: 0.9rem; }
+.addons-toggle .chevron { transition: transform var(--ease); font-size: 0.9rem; display: inline-block; }
 .addons-toggle.open .chevron { transform: rotate(90deg); }
 .addons-list { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
 .addon-chip { font-size: 0.72rem; padding: 0.3rem 0.75rem; border-radius: 20px; background: var(--lavender-pale); color: var(--lavender-deep); border: 1px solid var(--border); }
 .card-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
-.card-book-btn { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; color: var(--bronze); background: transparent; border: none; cursor: pointer; padding: 0; border-bottom: 1px solid var(--bronze); transition: all var(--ease); display: inline-flex; align-items: center; min-height: 36px; font-family: var(--font-body); text-decoration: none; }
+.card-book-btn { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; color: var(--bronze); background: transparent; border: none; border-bottom: 1px solid var(--bronze); transition: all var(--ease); display: inline-flex; align-items: center; min-height: 36px; font-family: var(--font-body); text-decoration: none; padding: 0; }
 .card-book-btn:hover { color: var(--bronze-light); border-color: var(--bronze-light); }
 .addons-section { background: var(--lavender-pale); border-radius: var(--radius); padding: 2.5rem; margin-top: 4rem; }
 .addons-section h2 { font-size: 1.8rem; color: var(--dark); margin-bottom: 0.5rem; }
@@ -40,10 +40,7 @@
 .addon-card:hover { box-shadow: var(--shadow); }
 .addon-name { font-family: var(--font-display); font-size: 1.05rem; color: var(--dark); margin-bottom: 0.4rem; }
 .addon-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
-@media (max-width: 640px) {
-  .services-grid { grid-template-columns: 1fr; }
-  .addons-grid { grid-template-columns: 1fr 1fr; }
-}
+@media (max-width: 640px) { .services-grid { grid-template-columns: 1fr; } .addons-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 400px) { .addons-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -60,7 +57,7 @@
       <li><a href="about.html" class="nav-link">About</a></li>
       <li><a href="faq.html" class="nav-link">FAQ</a></li>
       <li><a href="blog.html" class="nav-link">Blog</a></li>
-      <li><a href="https://chaircare.netlify.app/booking/?b=tesesthetics" data-book class="nav-link nav-cta" target="_blank" rel="noopener">Book Now</a></li>
+      <li><a href="https://chaircare.netlify.app/booking/?b=tesesthetics" class="nav-link nav-cta" target="_blank" rel="noopener">Book Now</a></li>
     </ul>
     <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
@@ -76,19 +73,13 @@
 
 <div class="booking-bar">
   <span class="booking-bar-text">See something you like?</span>
-  <a href="https://chaircare.netlify.app/booking/?b=tesesthetics" data-book target="_blank" rel="noopener" class="book-btn">📅 Book an Appointment</a>
-  <a href="https://chaircare.netlify.app/portal/?b=tesesthetics" data-portal target="_blank" rel="noopener" class="manage-btn">🗓 Manage My Booking</a>
+  <a href="https://chaircare.netlify.app/booking/?b=tesesthetics" target="_blank" rel="noopener" class="book-btn">📅 Book an Appointment</a>
+  <a href="https://chaircare.netlify.app/portal/?b=tesesthetics" target="_blank" rel="noopener" class="manage-btn">🗓 Manage My Booking</a>
 </div>
 
 <section>
   <div class="container">
-    <div class="filter-bar">
-      <button class="filter-btn active" onclick="filterServices('all', this)">All Services</button>
-      <button class="filter-btn" onclick="filterServices('Facial', this)">Facials</button>
-      <button class="filter-btn" onclick="filterServices('Seasonal', this)">Seasonal</button>
-      <button class="filter-btn" onclick="filterServices('Body Treatment', this)">Body</button>
-      <button class="filter-btn" onclick="filterServices('Makeup', this)">Makeup</button>
-    </div>
+    <div class="filter-bar" id="filter-bar"></div>
     <div id="services-container"></div>
     <div class="addons-section slide-up">
       <p class="section-label">Enhancements</p>
@@ -109,10 +100,12 @@
       <div class="footer-col">
         <h4>Navigate</h4>
         <nav class="footer-links">
-          <a href="../index.html">Home</a><a href="services.html">Services</a>
-          <a href="about.html">About</a><a href="faq.html">FAQ</a>
+          <a href="../index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="about.html">About</a>
+          <a href="faq.html">FAQ</a>
           <a href="blog.html">Blog</a>
-          <a href="https://chaircare.netlify.app/booking/?b=tesesthetics" data-book target="_blank" rel="noopener">Book Now</a>
+          <a href="https://chaircare.netlify.app/booking/?b=tesesthetics" target="_blank" rel="noopener">Book Now</a>
         </nav>
       </div>
       <div class="footer-col">
@@ -124,75 +117,112 @@
     <div class="footer-bottom">
       <span>© <span id="footer-year"></span> Tesesthetics. All rights reserved.</span>
       <span>Located in Buford, GA · By appointment only</span>
-      <a href="https://chaircare.netlify.app/admin/" data-admin target="_blank" rel="noopener" style="font-size:0.72rem;color:rgba(255,255,255,0.15);transition:color 0.3s;" onmouseover="this.style.color='rgba(255,255,255,0.4)'" onmouseout="this.style.color='rgba(255,255,255,0.15)'">Admin</a>
+      <a href="https://chaircare.netlify.app/admin/" target="_blank" rel="noopener" style="font-size:0.72rem;color:rgba(255,255,255,0.15);transition:color 0.3s;" onmouseover="this.style.color='rgba(255,255,255,0.4)'" onmouseout="this.style.color='rgba(255,255,255,0.15)'">Admin</a>
     </div>
   </div>
 </footer>
 
 <script src="../js/main.js"></script>
-<script src="../js/services-data.js"></script>
 <script>
+// ── DATA ──────────────────────────────────────────
 const BOOKING_URL = 'https://chaircare.netlify.app/booking/?b=tesesthetics';
 
-function getAddon(id) { return ADDONS.find(a => a.id === id); }
+const SERVICES = [
+  { id:"express-facial", name:"Express Facial", category:"Facial", description:"A results-driven refresh designed to cleanse, exfoliate, and hydrate the skin in less time. Perfect for routine maintenance, a quick reset, or a fresh glow between longer treatments.", addons:["enzyme-treatment","eye-treatment","lip-treatment","scalp-massage"] },
+  { id:"signature-facial", name:"Signature Custom Facial", category:"Facial", description:"A personalized facial experience tailored to your skin's unique needs. This treatment focuses on restoring balance, improving texture, and leaving the skin refreshed, nourished, and visibly renewed.", addons:["extractions","enzyme-treatment","hydrating-mask","eye-treatment","lip-treatment","scalp-massage"] },
+  { id:"deep-cleansing-facial", name:"Deep Cleansing Facial", category:"Facial", description:"A clarifying treatment created for skin that feels congested, unbalanced, or in need of a thorough reset. Focuses on deep cleansing, gentle exfoliation, and targeted care to support a clearer, smoother complexion.", addons:["extractions","enzyme-treatment","calming-mask","scalp-massage"] },
+  { id:"hydrating-facial", name:"Hydrating Facial", category:"Facial", description:"A moisture-rich treatment designed to restore comfort to dry, tight, or depleted skin. Helps replenish hydration, soften texture, and bring back a healthy, refreshed glow.", addons:["hydrating-mask","eye-treatment","lip-treatment","cooling-globe","scalp-massage"] },
+  { id:"brightening-facial", name:"Brightening Facial", category:"Facial", description:"A radiance-focused facial that helps revive dull, tired-looking skin with gentle exfoliation and nourishing care. Ideal for clients wanting a smoother, more luminous finish without harsh treatment.", addons:["enzyme-treatment","eye-treatment","lip-treatment","hydrating-mask","cooling-globe"] },
+  { id:"calming-facial", name:"Calming Facial", category:"Facial", description:"A soothing treatment created for sensitive, reactive, or easily irritated skin. Prioritizes comfort, hydration, and barrier support while helping the skin look more balanced and at ease.", addons:["hydrating-mask","eye-treatment","lip-treatment","cooling-globe","scalp-massage"] },
+  { id:"clarifying-facial", name:"Clarifying Facial", category:"Facial", description:"A targeted treatment for oily, breakout-prone, or congested skin. Deeply cleanses and refines the skin without stripping it, helping support a clearer, healthier-looking complexion over time.", addons:["extractions","enzyme-treatment","calming-mask","scalp-massage"] },
+  { id:"teen-facial", name:"Teen Facial", category:"Facial", description:"A gentle, age-appropriate facial designed to introduce healthy skincare habits while addressing common concerns like oiliness, congestion, and occasional breakouts. A great starting point for younger skin.", addons:["extractions","enzyme-treatment","scalp-massage"] },
+  { id:"glow-facial", name:"Glow Facial", category:"Facial", description:"A revitalizing treatment designed to refresh dull skin and restore a naturally radiant look. Combines cleansing, exfoliation, and hydration for a smooth, healthy finish that feels polished but effortless.", addons:["enzyme-treatment","eye-treatment","lip-treatment","hydrating-mask","cooling-globe"] },
+  { id:"seasonal-renewal", name:"Seasonal Renewal Facial", category:"Seasonal", description:"A customized facial designed to help the skin adjust through seasonal changes — whether that means calming dryness, clearing buildup, or restoring hydration and balance.", addons:["enzyme-treatment","hydrating-mask","eye-treatment","lip-treatment","scalp-massage"] },
+  { id:"back-facial", name:"Back Facial", category:"Body Treatment", description:"A deep-cleansing treatment for one of the most overlooked areas of the body. Designed to improve congestion, dryness, and rough texture — leaving the skin feeling smoother, cleaner, and refreshed.", addons:["enzyme-treatment","hydrating-mask","extractions","scalp-massage"] },
+  { id:"makeup-application", name:"Makeup Application", category:"Makeup", description:"A polished makeup service for special occasions, photos, or events where you want to feel refined, confident, and put together. Can be booked on its own or paired with a skin-prep service.", addons:["lip-treatment","eye-treatment","mini-skin-prep","glow-boost"] },
+];
 
-function buildServiceCard(s) {
-  const icon = CATEGORY_ICONS[s.category] || '✦';
-  const addons = (s.addons || []).map(id => getAddon(id)).filter(Boolean);
-  const chips = addons.map(a => `<span class="addon-chip">${a.name}</span>`).join('');
-  return `
-    <div class="service-card fade-in" data-category="${s.category}">
-      <span class="card-icon">${icon}</span>
-      <h3 class="card-name">${s.name}</h3>
-      <p class="card-description">${s.description}</p>
-      ${addons.length ? `
-        <button class="addons-toggle" onclick="toggleAddons(this)">
-          <span>✦ Add-Ons Available (${addons.length})</span>
-          <span class="chevron">›</span>
-        </button>
-        <div class="addons-list">${chips}</div>
-      ` : ''}
-      <hr class="card-divider"/>
-      <a href="${BOOKING_URL}" target="_blank" rel="noopener" class="card-book-btn">Book This Service →</a>
-    </div>`;
-}
+const ADDONS = [
+  { id:"extractions",      name:"Extractions",           description:"Targeted pore clearing for areas of congestion." },
+  { id:"enzyme-treatment", name:"Enzyme Treatment",      description:"A gentle exfoliating boost to refine texture and refresh the skin." },
+  { id:"hydrating-mask",   name:"Hydrating Mask Upgrade",description:"An added layer of nourishment for dry or depleted skin." },
+  { id:"calming-mask",     name:"Calming Mask Upgrade",  description:"A soothing enhancement for skin that needs comfort and balance." },
+  { id:"eye-treatment",    name:"Eye Treatment",         description:"Focused care to hydrate and refresh the delicate eye area." },
+  { id:"lip-treatment",    name:"Lip Treatment",         description:"A smoothing, softening treatment for dry lips." },
+  { id:"scalp-massage",    name:"Scalp Massage",         description:"A relaxing finishing touch designed to elevate the overall experience." },
+  { id:"cooling-globe",    name:"Cooling Globe Massage", description:"A soothing facial massage that helps the skin feel calm, refreshed, and revitalized." },
+  { id:"mini-skin-prep",   name:"Mini Skin Prep",        description:"A quick skin-perfecting prep before makeup application." },
+  { id:"glow-boost",       name:"Glow Boost Add-On",     description:"A finishing enhancement designed to leave the skin looking especially fresh and radiant." },
+];
 
+const CATEGORIES = ["Facial","Seasonal","Body Treatment","Makeup"];
+const ICONS = { "Facial":"✦", "Seasonal":"🌿", "Body Treatment":"◆", "Makeup":"◈" };
+
+// ── RENDER ────────────────────────────────────────
 function renderServices(filter) {
   const container = document.getElementById('services-container');
-  const filtered = filter === 'all' ? SERVICES : SERVICES.filter(s => s.category === filter);
   const cats = filter === 'all' ? CATEGORIES : [filter];
   container.innerHTML = cats.map(cat => {
-    const items = filtered.filter(s => s.category === cat);
+    const items = SERVICES.filter(s => s.category === cat && (filter === 'all' || s.category === filter));
     if (!items.length) return '';
+    const cards = items.map(s => {
+      const addonObjs = (s.addons || []).map(id => ADDONS.find(a => a.id === id)).filter(Boolean);
+      const chips = addonObjs.map(a => `<span class="addon-chip">${a.name}</span>`).join('');
+      const addonBlock = addonObjs.length ? `
+        <button class="addons-toggle" data-toggle>
+          <span>✦ Add-Ons Available (${addonObjs.length})</span>
+          <span class="chevron">›</span>
+        </button>
+        <div class="addons-list">${chips}</div>` : '';
+      return `<div class="service-card">
+        <span class="card-icon">${ICONS[s.category] || '✦'}</span>
+        <h3 class="card-name">${s.name}</h3>
+        <p class="card-description">${s.description}</p>
+        ${addonBlock}
+        <hr class="card-divider"/>
+        <a href="${BOOKING_URL}" target="_blank" rel="noopener" class="card-book-btn">Book This Service →</a>
+      </div>`;
+    }).join('');
     return `<div class="category-section">
       <h2 class="category-heading">${cat}</h2>
-      <div class="services-grid">${items.map(buildServiceCard).join('')}</div>
+      <div class="services-grid">${cards}</div>
     </div>`;
   }).join('');
-  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 50);
+
+  // Attach toggle listeners after render
+  document.querySelectorAll('[data-toggle]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const list = this.nextElementSibling;
+      const isOpen = list.style.maxHeight && list.style.maxHeight !== '0px';
+      this.classList.toggle('open', !isOpen);
+      list.style.maxHeight = isOpen ? '0px' : list.scrollHeight + 'px';
+    });
+  });
 }
 
 function renderAddons() {
-  document.getElementById('addons-grid').innerHTML = ADDONS.map(a => `
-    <div class="addon-card">
-      <div class="addon-name">${a.name}</div>
-      <div class="addon-desc">${a.description}</div>
-    </div>`).join('');
+  document.getElementById('addons-grid').innerHTML = ADDONS.map(a =>
+    `<div class="addon-card"><div class="addon-name">${a.name}</div><div class="addon-desc">${a.description}</div></div>`
+  ).join('');
 }
 
-function filterServices(cat, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderServices(cat);
+function renderFilters() {
+  const bar = document.getElementById('filter-bar');
+  const filters = [['all','All Services'],['Facial','Facials'],['Seasonal','Seasonal'],['Body Treatment','Body'],['Makeup','Makeup']];
+  bar.innerHTML = filters.map(([val, label]) =>
+    `<button class="filter-btn${val === 'all' ? ' active' : ''}" data-filter="${val}">${label}</button>`
+  ).join('');
+  bar.addEventListener('click', function(e) {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderServices(btn.dataset.filter);
+  });
 }
 
-function toggleAddons(btn) {
-  const list = btn.nextElementSibling;
-  const isOpen = list.style.maxHeight && list.style.maxHeight !== '0px';
-  btn.classList.toggle('open', !isOpen);
-  list.style.maxHeight = isOpen ? '0px' : list.scrollHeight + 'px';
-}
-
+// ── INIT ──────────────────────────────────────────
+renderFilters();
 renderServices('all');
 renderAddons();
 </script>
