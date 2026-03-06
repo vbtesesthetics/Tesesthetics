@@ -125,7 +125,7 @@
 <script src="../js/main.js"></script>
 <script>
 // ── DATA ──────────────────────────────────────────
-const BOOKING_URL = 'https://chaircare.netlify.app/booking/?b=tesesthetics';
+// BOOKING_URL is defined in main.js
 
 const SERVICES = [
   { id:"express-facial", name:"Express Facial", category:"Facial", description:"A results-driven refresh designed to cleanse, exfoliate, and hydrate the skin in less time. Perfect for routine maintenance, a quick reset, or a fresh glow between longer treatments.", addons:["enzyme-treatment","eye-treatment","lip-treatment","scalp-massage"] },
@@ -222,9 +222,11 @@ function renderFilters() {
 }
 
 // ── INIT ──────────────────────────────────────────
-renderFilters();
-renderServices('all');
-renderAddons();
+document.addEventListener('DOMContentLoaded', function() {
+  renderFilters();
+  renderServices('all');
+  renderAddons();
+});
 </script>
 </body>
 </html>
