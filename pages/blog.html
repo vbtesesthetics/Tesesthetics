@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blog — Tesesthetics</title>
+<meta name="description" content="Skin care tips, seasonal guides, and honest advice from Veronica at Tesesthetics in Buford, GA."/>
+<link rel="icon" type="image/png" href="../assets/logo.png"/>
+<link rel="stylesheet" href="../css/main.css"/>
+<style>
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+.blog-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; transition: transform var(--ease), box-shadow var(--ease);
+  display: flex; flex-direction: column;
+}
+.blog-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+.blog-card-img { height: 160px; background: linear-gradient(135deg, var(--lavender-pale), var(--bronze-pale)); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.blog-card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+.blog-tag { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--lavender-deep); margin-bottom: 0.75rem; }
+.blog-card h3 { font-size: 1.25rem; color: var(--dark); margin-bottom: 0.75rem; line-height: 1.3; }
+.blog-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; flex: 1; margin-bottom: 1.25rem; }
+.blog-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); }
+.blog-read-link { color: var(--bronze); font-weight: 600; transition: color var(--ease); }
+.blog-read-link:hover { color: var(--bronze-light); }
+.blog-coming { text-align: center; padding: 5rem 2rem; background: var(--lavender-pale); border-radius: var(--radius); margin-top: 2rem; }
+.blog-coming h3 { font-size: 1.8rem; color: var(--dark); margin-bottom: 1rem; }
+.blog-coming p { color: var(--text-muted); max-width: 440px; margin: 0 auto 2rem; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">
+      <img src="../assets/logo.png" alt="Tesesthetics"/>
+      <span>Tesesthetics</span>
+    </a>
+    <ul id="nav-menu">
+      <li><a href="services.html" class="nav-link" data-page="services">Services</a></li>
+      <li><a href="about.html" class="nav-link" data-page="about">About</a></li>
+      <li><a href="faq.html" class="nav-link" data-page="faq">FAQ</a></li>
+      <li><a href="blog.html" class="nav-link active" data-page="blog">Blog</a></li>
+      <li><a href="#" data-book class="nav-link nav-cta" target="_blank" rel="noopener">Book Now</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container">
+    <p class="section-label">Skin Tips &amp; Stories</p>
+    <h1>The Blog</h1>
+    <p>Practical advice, seasonal guides, and honest takes on skin care — written for real people with real skin.</p>
+  </div>
+</div>
+
+<!-- BOOKING BAR -->
+<div class="booking-bar">
+  <span class="booking-bar-text">Ready to put these tips to work?</span>
+  <a href="#" data-book target="_blank" rel="noopener" class="book-btn">📅 Book an Appointment</a>
+  <a href="#" data-portal target="_blank" rel="noopener" class="manage-btn">🗓 Manage My Booking</a>
+</div>
+
+<!-- BLOG -->
+<section>
+  <div class="container">
+    <div class="blog-coming slide-up">
+      <div style="font-size:3rem;margin-bottom:1rem;">✦</div>
+      <h3>Coming Soon</h3>
+      <p>Veronica is working on skin care guides, seasonal tips, and honest product takes. Check back soon — good content takes time.</p>
+      <a href="#" data-book target="_blank" rel="noopener" class="btn-primary">Book a Treatment in the Meantime</a>
+    </div>
+
+    <!-- Sample posts — replace with real content when ready -->
+    <div class="blog-grid" style="margin-top:4rem;">
+      <div class="blog-card slide-up" style="opacity:0.6;pointer-events:none;">
+        <div class="blog-card-img">☀️</div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Seasonal</span>
+          <h3>Summer Skin: Why Heat Makes Everything Worse (And What To Do)</h3>
+          <p>Heat, humidity, and sweat are a recipe for congestion. Here's how to keep your skin balanced all summer long.</p>
+          <div class="blog-meta"><span>Coming soon</span></div>
+        </div>
+      </div>
+      <div class="blog-card slide-up" style="opacity:0.6;pointer-events:none;">
+        <div class="blog-card-img">🌿</div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Ingredients</span>
+          <h3>Retinol vs. Retinoids: What's Actually the Difference?</h3>
+          <p>Everyone talks about retinol but few people actually understand what it does — or when not to use it.</p>
+          <div class="blog-meta"><span>Coming soon</span></div>
+        </div>
+      </div>
+      <div class="blog-card slide-up" style="opacity:0.6;pointer-events:none;">
+        <div class="blog-card-img">✨</div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Services</span>
+          <h3>Dermaplaning Myths, Debunked</h3>
+          <p>No, it won't make your hair grow back thicker. Let's clear up the most common misconceptions.</p>
+          <div class="blog-meta"><span>Coming soon</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <img src="../assets/logo.png" alt="Tesesthetics"/>
+          <span>Tesesthetics</span>
+        </div>
+        <p class="footer-tagline">Skin that glows from intention, not accident.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigate</h4>
+        <nav class="footer-links">
+          <a href="../index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="about.html">About</a>
+          <a href="faq.html">FAQ</a>
+          <a href="blog.html">Blog</a>
+          <a href="#" data-book target="_blank" rel="noopener">Book Now</a>
+        </nav>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <div class="footer-contact-item"><span class="footer-contact-icon">📍</span><span>Buford, GA</span></div>
+        <div class="footer-contact-item"><span class="footer-contact-icon">🕐</span><span>By appointment only</span></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="footer-year"></span> Tesesthetics. All rights reserved.</span>
+      <span>Located in Buford, GA &middot; By appointment only</span>
+      <a href="#" data-admin target="_blank" rel="noopener" style="font-size:0.72rem;color:rgba(255,255,255,0.15);transition:color 0.3s;" onmouseover="this.style.color='rgba(255,255,255,0.4)'" onmouseout="this.style.color='rgba(255,255,255,0.15)'">Admin</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
