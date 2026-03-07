@@ -3,8 +3,8 @@
 //  Nav, animations, booking bar
 // =====================================================
 
-const BOOKING_URL  = 'https://chaircare.netlify.app/booking/?b=tesesthetics';
-const PORTAL_URL   = 'https://chaircare.netlify.app/portal/?b=tesesthetics';
+const BOOKING_URL  = 'https://chaircare.netlify.app/booking/?b=test-studio';
+const PORTAL_URL   = 'https://chaircare.netlify.app/portal/?b=test-studio';
 const ADMIN_URL    = 'https://chaircare.netlify.app/admin/';
 
 function initNav() {
